@@ -1,21 +1,9 @@
 #include <SFML/Graphics.hpp>
-#include "player.h"
+#include "Entities/player.h"
+#include "Environment/level.h"
 
 class Game
 {
-public:
-	// Constructor and basic game loop
-	Game(sf::RenderWindow& window);
-	~Game();
-	bool Init();
-	void Update(float dt);
-	void Render();
-	// Input Management
-	void KeyboardEvent(sf::Event event);
-	void MouseEvent(sf::Event event);
-
-	void CollisionDetect();
-
 private:
 	// Misc
 	sf::RenderWindow& window;
@@ -31,4 +19,18 @@ private:
 	// Fonts and Texts
 	sf::Font debugFont;
 	sf::Text debugText;
+
+public:
+	// Constructor and basic game loop
+	Game(sf::RenderWindow& window);
+	~Game();
+	bool Init();
+	void Update(float dt);
+	void Render();
+	// Input Management
+	void KeyboardEvent(sf::Event event);
+	void MouseEvent(sf::Event event);
+
+	void CollisionDetect();
+
 };

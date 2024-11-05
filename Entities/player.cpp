@@ -8,8 +8,8 @@ Player::Player()
 
 	// Physics
 	speed = 300.f;
-	jumpSpeed = 300.f;
-	gravity = 1.f;
+	jumpSpeed = 200.f;
+	gravity = 1500.f;
 	grounded = false;
 
 	// Input
@@ -31,12 +31,8 @@ bool Player::Init()
 		std::cout << "Error - Player Idle.png failed to load" << std::endl;
 		return false;
 	}
-	if (!runLeftTexture.loadFromFile("Content/Sprites/Player/RunLeft.png")) {
-		std::cout << "Error - Player RunLeft.png failed to load" << std::endl;
-		return false;
-	}
-	if (!runRightTexture.loadFromFile("Content/Sprites/Player/RunRight.png")) {
-		std::cout << "Error - Player RunRight.png failed to load" << std::endl;
+	if (!runTexture.loadFromFile("Content/Sprites/Player/Run.png")) {
+		std::cout << "Error - Player Run.png failed to load" << std::endl;
 		return false;
 	}
 
@@ -44,12 +40,8 @@ bool Player::Init()
 		std::cout << "Error - Player JumpIdle.png failed to load" << std::endl;
 		return false;
 	}
-	if (!jumpLeftTexture.loadFromFile("Content/Sprites/Player/JumpLeft.png")) {
-		std::cout << "Error - Player JumpLeft.png failed to load" << std::endl;
-		return false;
-	}
-	if (!jumpRightTexture.loadFromFile("Content/Sprites/Player/JumpRight.png")) {
-		std::cout << "Error - Player JumpRight.png failed to load" << std::endl;
+	if (!jumpRunTexture.loadFromFile("Content/Sprites/Player/JumpRun.png")) {
+		std::cout << "Error - Player JumpRun.png failed to load" << std::endl;
 		return false;
 	}
 
@@ -69,18 +61,26 @@ void Player::Update(float dt)
 	if (grounded)
 		velocity.y = 0.f;
 	else
-		velocity.y += gravity;
+		velocity.y += gravity * dt;
 
 	// Basic animation
 	if (moveLeft == moveRight)
 		sprite.setTexture(grounded ? idleTexture : jumpIdleTexture);
 	else if (moveLeft)
 	{
-		sprite.setTexture(grounded ? runLeftTexture : jumpLeftTexture);
+		sprite.setTexture(grounded ? runTexture : jumpRunTexture);
+		sprite.setTextureRect(sf::IntRect(
+			sprite.getLocalBounds().width,
+			0,
+			-sprite.getLocalBounds().width,
+			sprite.getLocalBounds().height));
 	}
 	else if (moveRight)
 	{
-		sprite.setTexture(grounded ? runRightTexture : jumpRightTexture);
+		sprite.setTexture(grounded ? runTexture : jumpRunTexture);
+		sprite.setTextureRect(sf::IntRect(
+			0, 0, sprite.getLocalBounds().width,
+			sprite.getLocalBounds().height));
 	}
 
 	// Updating position from velocity
@@ -121,7 +121,7 @@ void Player::KeyboardInput(sf::Event event)
 	case sf::Keyboard::Scancode::Space:
 		if (grounded && keyPressed)
 		{
-			velocity.y = -jumpSpeed*gravity*3;
+			velocity.y = -jumpSpeed*3;
 			grounded = false;
 		}
 		break;

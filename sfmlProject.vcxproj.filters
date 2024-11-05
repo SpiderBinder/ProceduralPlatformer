@@ -25,6 +25,9 @@
     <Filter Include="Source Files\Objects">
       <UniqueIdentifier>{81ac962f-f1ae-4da5-81de-bf3cb01d4b38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Environment">
+      <UniqueIdentifier>{7ad5026a-ce6c-4fae-93e0-7350e1e0d8ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,16 +36,22 @@
     <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
+    <ClCompile Include="Entities\player.cpp">
       <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\level.cpp">
+      <Filter>Source Files\Environment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="player.h">
+    <ClInclude Include="Entities\player.h">
       <Filter>Source Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Environment\level.h">
+      <Filter>Source Files\Environment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

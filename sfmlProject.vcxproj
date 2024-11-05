@@ -139,13 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entities\player.cpp" />
+    <ClCompile Include="Environment\level.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entities\player.h" />
+    <ClInclude Include="Environment\level.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="player.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Content\Sprites\Player\Idle.png" />
