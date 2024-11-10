@@ -43,6 +43,8 @@ class Level
 private:
 	std::vector<Room> rooms;
 
+	sf::Texture textures[15];
+
 public:
 	Level();
 	bool Init();
@@ -52,5 +54,3 @@ public:
 	void Render(sf::RenderWindow& window);
 
 };
-
-// Test Comment
