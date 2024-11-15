@@ -1,4 +1,6 @@
+
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 
 class Player
 {
@@ -6,10 +8,16 @@ private:
 	// Physics
 	sf::Vector2f position;
 	sf::Vector2f velocity;
+	sf::Vector2f acceleration;
 	sf::Vector2f size;
-	float speed;
+
+	float runAcceleration;
+	float runSpeed;
 	float jumpSpeed;
 	float gravity;
+	float friction;
+	float airResistance;
+
 	bool grounded;
 	// Input
 	bool moveRight;

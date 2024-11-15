@@ -1,5 +1,7 @@
-#include <iostream>
+
+
 #include "player.h"
+#include <iostream>
 
 // Constructor
 Player::Player()
@@ -7,9 +9,12 @@ Player::Player()
 	position = sf::Vector2f(100.f, 100.f);
 
 	// Physics
-	speed = 300.f;
+	runAcceleration = 3000.f;
+	runSpeed = 300.f;
 	jumpSpeed = 200.f;
 	gravity = 1500.f;
+	friction = 1000.f;
+	airResistance = 300.f;
 	grounded = false;
 
 	// Input
@@ -57,12 +62,51 @@ bool Player::Init()
 
 void Player::Update(float dt)
 {
-	// Checking for grounded state for applying gravity (may be able to just remove this tbh)
-	if (grounded)
-		velocity.y = 0.f;
-	else
-		velocity.y += gravity * dt;
+	acceleration.x = 0;
+	acceleration.y = 0;
 
+	// Applying gravity when not grounded (may not need)
+	if (!grounded)
+		acceleration.y += gravity;
+
+	if (moveRight)
+	{
+		if (velocity.x >= runSpeed) // NOTE: Work in progress
+	}
+	if (moveLeft)
+	{
+		
+	}
+
+	
+	// Calculating friction
+	if (!(moveLeft || moveRight))
+	{
+		float resistance = grounded ? friction : airResistance;
+
+		float temp = velocity.x;
+		velocity.x -= dt * (velocity.x >= 0 ? resistance : -resistance);
+		if (signbit(temp) != signbit(velocity.x))
+		{
+			velocity.x = 0;
+		}
+	}
+
+	// Updating position from velocity
+	velocity += acceleration * dt;
+	position += velocity * dt;
+	sprite.setPosition(position);
+}
+
+void Player::Collision(sf::Vector2f newPosition, bool ground)
+{
+	grounded = ground;
+	position = newPosition;
+	sprite.setPosition(newPosition);
+}
+
+void Player::Render(sf::RenderWindow& window)
+{
 	// Basic animation
 	if (moveLeft == moveRight)
 		sprite.setTexture(grounded ? idleTexture : jumpIdleTexture);
@@ -83,20 +127,6 @@ void Player::Update(float dt)
 			sprite.getLocalBounds().height));
 	}
 
-	// Updating position from velocity
-	position += velocity * dt;
-	sprite.setPosition(position);
-}
-
-void Player::Collision(sf::Vector2f newPosition, bool ground)
-{
-	grounded = ground;
-	position = newPosition;
-	sprite.setPosition(newPosition);
-}
-
-void Player::Render(sf::RenderWindow& window)
-{
 	window.draw(sprite);
 }
 
@@ -108,13 +138,9 @@ void Player::KeyboardInput(sf::Event event)
 	switch (event.key.scancode)
 	{
 	case sf::Keyboard::Scancode::D:
-		velocity.x += keyPressed && !moveRight ? speed : 0;
-		velocity.x += !keyPressed && moveRight ? -speed : 0;
 		moveRight = keyPressed ? true : false;
 		break;
 	case sf::Keyboard::Scancode::A:
-		velocity.x += keyPressed && !moveLeft ? -speed : 0;
-		velocity.x += !keyPressed && moveLeft ? speed : 0;
 		moveLeft = keyPressed ? true : false;
 		break;
 
