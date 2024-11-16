@@ -23,14 +23,15 @@ private:
 	// Input
 	bool moveRight;
 	bool moveLeft;
-	bool moveDown;
-	bool moveJump;
+	bool crouch;
+	bool jump;
 	// Sprites and Textures
 	sf::Sprite sprite;
 	sf::Texture idleTexture;
 	sf::Texture runTexture;
 	sf::Texture jumpIdleTexture;
 	sf::Texture jumpRunTexture;
+	sf::Texture crouchTexture;
 
 public:
 	// Constructor

@@ -17,8 +17,8 @@ Player::Player()
 	// Input
 	moveLeft = false;
 	moveRight = false;
-	moveDown = false;
-	moveJump = false;
+	crouch = false;
+	jump = false;
 }
 
 Player::~Player()
@@ -49,6 +49,11 @@ bool Player::Init()
 		success = false;
 	}
 
+	if (!crouchTexture.loadFromFile("Content/Sprites/Player/Crouch.png")) {
+		std::cout << "Error - Player Crouch.png failed to load" << std::endl;
+		success = false;
+	}
+
 	sprite.setTexture(idleTexture);
 	sprite.setPosition(100.f, 100.f);
 	sprite.setScale(2.f, 2.f);
@@ -61,28 +66,30 @@ bool Player::Init()
 
 void Player::Update(float dt)
 {
+	// Updating collision box
+	size.y = crouch ? 96.f : 128.f;
+
 	// NOTE: Having a seperate thing for acceleration may be stupid idk
 	acceleration.x = 0;
 	acceleration.y = 0;
 
-
-	if (!grounded)
-	{
-		// Applying gravity when not grounded (may not be needed)
-		acceleration.y += gravity;
-	}
+	// Applying gravity
+	acceleration.y += crouch ? gravity * 2 : gravity;
 
 	// Movement physics
-	if (grounded)
-	{
-		acceleration.x += moveRight ? runAcceleration : 0;
-		acceleration.x += moveLeft ? -runAcceleration : 0;
-	}
+	acceleration.x += moveRight * runAcceleration * 
+		(!crouch ? 1 : 0.4) *
+		(grounded ? 1 : 0.2);
+
+	acceleration.x += moveLeft * -runAcceleration *
+		(!crouch ? 1 : 0.4) *
+		(grounded ? 1 : 0.2);
+	
 
 
 	// Calculating resistance
 	velocity.x -= dt *
-		(grounded ? 8 : 0.2) * 
+		(grounded ? 8 : 1) * 
 		(velocity.x + (velocity.x >= 0 ? 30 : -30));
 
 	// Updating position from velocity
@@ -94,20 +101,31 @@ void Player::Update(float dt)
 void Player::Collision(sf::Vector2f newPosition, bool ground)
 {
 	grounded = ground;
+	if (grounded)
+		velocity.y = 0;
 	position = newPosition;
 	sprite.setPosition(newPosition);
 }
 
 void Player::Render(sf::RenderWindow& window)
 {
+	// Crouching resizing
+
 	// Basic animation
-	if (moveLeft == moveRight)
-		// Stationary Texture
-		sprite.setTexture(grounded ? idleTexture : jumpIdleTexture);
+	if (crouch)
+	{
+		// Crouching texture
+		sprite.setTexture(crouchTexture, true);
+	}
+	else if (moveLeft == moveRight)
+	{
+		// Stationary texture
+		sprite.setTexture(grounded ? idleTexture : jumpIdleTexture, true);
+	}
 	else if (moveLeft)
 	{
-		// Running/Jump Running texture
-		sprite.setTexture(grounded ? runTexture : jumpRunTexture);
+		// Running/jump running texture
+		sprite.setTexture(grounded ? runTexture : jumpRunTexture, true);
 		// Flip sprite left
 		sprite.setTextureRect(sf::IntRect(
 			sprite.getLocalBounds().width,
@@ -117,8 +135,8 @@ void Player::Render(sf::RenderWindow& window)
 	}
 	else if (moveRight)
 	{
-		// Running/Jump Running texture
-		sprite.setTexture(grounded ? runTexture : jumpRunTexture);
+		// Running/jump running texture
+		sprite.setTexture(grounded ? runTexture : jumpRunTexture, true);
 		// Flip sprite right
 		sprite.setTextureRect(sf::IntRect(
 			0, 0, sprite.getLocalBounds().width,
@@ -136,22 +154,28 @@ void Player::KeyboardInput(sf::Event event)
 	// Input cases
 	switch (event.key.scancode)
 	{
-		// Moving right
+	// Moving right
 	case sf::Keyboard::Scancode::D:
 		moveRight = keyPressed ? true : false;
 		break;
-		// Moving left
+	// Moving left
 	case sf::Keyboard::Scancode::A:
 		moveLeft = keyPressed ? true : false;
 		break;
 
-		// Jumping
+	// Jumping
 	case sf::Keyboard::Scancode::Space:
-		if (grounded && keyPressed)
+		jump = keyPressed ? true : false;
+		if (grounded && jump)
 		{
 			velocity.y = -jumpSpeed*3;
 			grounded = false;
 		}
+		break;
+	// Crouching
+	case sf::Keyboard::Scancode::LControl:
+	case sf::Keyboard::Scancode::S:
+		crouch = keyPressed ? true : false;
 		break;
 	}
 }
