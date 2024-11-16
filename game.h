@@ -1,4 +1,9 @@
+
+#include <iostream>
+#include <string>
 #include <SFML/Graphics.hpp>
+
+
 #include "Entities/player.h"
 #include "Environment/level.h"
 

@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include "game.h"
 
 Game::Game(sf::RenderWindow& game_window) 
@@ -55,7 +55,29 @@ void Game::Render()
 {
 	player.Render(window);
 
-	debugText.setString(std::to_string(player.Position().y));
+
+
+	// Player debug info
+	std::string position = "Position: " +
+		std::to_string(player.Position().x) + ' ' +
+		std::to_string(player.Position().y);
+
+	std::string velocity = "Velocity: " + 
+		std::to_string(player.Velocity().x) + ' ' +
+		std::to_string(player.Velocity().y);
+
+	std::string acceleration = "Acceleration: " +
+		std::to_string(player.Acceleration().x) + ' ' +
+		std::to_string(player.Acceleration().y);
+
+	debugText.setString(position);
+	debugText.setPosition(10, 10);
+	window.draw(debugText);
+	debugText.setString(velocity);
+	debugText.setPosition(10, 25);
+	window.draw(debugText);
+	debugText.setString(acceleration);
+	debugText.setPosition(10, 40);
 	window.draw(debugText);
 }
 

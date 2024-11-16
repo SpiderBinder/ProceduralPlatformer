@@ -1,7 +1,5 @@
 
-
 #include "player.h"
-#include <iostream>
 
 // Constructor
 Player::Player()
@@ -13,8 +11,7 @@ Player::Player()
 	runSpeed = 300.f;
 	jumpSpeed = 200.f;
 	gravity = 1500.f;
-	friction = 1000.f;
-	airResistance = 300.f;
+	friction = 0.2f; // NOTE: Temporary value until individual material friction is added
 	grounded = false;
 
 	// Input
@@ -31,23 +28,25 @@ Player::~Player()
 
 bool Player::Init()
 {
+	bool success = true;
+
 	// Loading Player Textures
 	if (!idleTexture.loadFromFile("Content/Sprites/Player/Idle.png")) {
 		std::cout << "Error - Player Idle.png failed to load" << std::endl;
-		return false;
+		success = false;
 	}
 	if (!runTexture.loadFromFile("Content/Sprites/Player/Run.png")) {
 		std::cout << "Error - Player Run.png failed to load" << std::endl;
-		return false;
+		success = false;
 	}
 
 	if (!jumpIdleTexture.loadFromFile("Content/Sprites/Player/JumpIdle.png")) {
 		std::cout << "Error - Player JumpIdle.png failed to load" << std::endl;
-		return false;
+		success = false;
 	}
 	if (!jumpRunTexture.loadFromFile("Content/Sprites/Player/JumpRun.png")) {
 		std::cout << "Error - Player JumpRun.png failed to load" << std::endl;
-		return false;
+		success = false;
 	}
 
 	sprite.setTexture(idleTexture);
@@ -57,40 +56,34 @@ bool Player::Init()
 	size.x = sprite.getGlobalBounds().width;
 	size.y = sprite.getGlobalBounds().height;
 
-	return true;
+	return success;
 }
 
 void Player::Update(float dt)
 {
+	// NOTE: Having a seperate thing for acceleration may be stupid idk
 	acceleration.x = 0;
 	acceleration.y = 0;
 
-	// Applying gravity when not grounded (may not need)
+
 	if (!grounded)
+	{
+		// Applying gravity when not grounded (may not be needed)
 		acceleration.y += gravity;
-
-	if (moveRight)
-	{
-		if (velocity.x >= runSpeed) // NOTE: Work in progress
-	}
-	if (moveLeft)
-	{
-		
 	}
 
-	
-	// Calculating friction
-	if (!(moveLeft || moveRight))
+	// Movement physics
+	if (grounded)
 	{
-		float resistance = grounded ? friction : airResistance;
-
-		float temp = velocity.x;
-		velocity.x -= dt * (velocity.x >= 0 ? resistance : -resistance);
-		if (signbit(temp) != signbit(velocity.x))
-		{
-			velocity.x = 0;
-		}
+		acceleration.x += moveRight ? runAcceleration : 0;
+		acceleration.x += moveLeft ? -runAcceleration : 0;
 	}
+
+
+	// Calculating resistance
+	velocity.x -= dt *
+		(grounded ? 8 : 0.2) * 
+		(velocity.x + (velocity.x >= 0 ? 30 : -30));
 
 	// Updating position from velocity
 	velocity += acceleration * dt;
@@ -109,10 +102,13 @@ void Player::Render(sf::RenderWindow& window)
 {
 	// Basic animation
 	if (moveLeft == moveRight)
+		// Stationary Texture
 		sprite.setTexture(grounded ? idleTexture : jumpIdleTexture);
 	else if (moveLeft)
 	{
+		// Running/Jump Running texture
 		sprite.setTexture(grounded ? runTexture : jumpRunTexture);
+		// Flip sprite left
 		sprite.setTextureRect(sf::IntRect(
 			sprite.getLocalBounds().width,
 			0,
@@ -121,7 +117,9 @@ void Player::Render(sf::RenderWindow& window)
 	}
 	else if (moveRight)
 	{
+		// Running/Jump Running texture
 		sprite.setTexture(grounded ? runTexture : jumpRunTexture);
+		// Flip sprite right
 		sprite.setTextureRect(sf::IntRect(
 			0, 0, sprite.getLocalBounds().width,
 			sprite.getLocalBounds().height));
@@ -134,16 +132,20 @@ void Player::KeyboardInput(sf::Event event)
 {
 	// Checking if event is 'KeyPressed' or 'KeyReleased'
 	bool keyPressed = event.type == sf::Event::KeyPressed;
+
 	// Input cases
 	switch (event.key.scancode)
 	{
+		// Moving right
 	case sf::Keyboard::Scancode::D:
 		moveRight = keyPressed ? true : false;
 		break;
+		// Moving left
 	case sf::Keyboard::Scancode::A:
 		moveLeft = keyPressed ? true : false;
 		break;
 
+		// Jumping
 	case sf::Keyboard::Scancode::Space:
 		if (grounded && keyPressed)
 		{

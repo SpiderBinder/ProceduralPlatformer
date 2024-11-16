@@ -1,6 +1,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <algorithm>
+#include <iostream>
 
 class Player
 {
@@ -47,6 +48,7 @@ public:
 
 	sf::Vector2f Position() { return position; }
 	sf::Vector2f Velocity() { return velocity; }
+	sf::Vector2f Acceleration() { return acceleration; }
 	sf::Vector2f Size() { return size; }
 	
 };
