@@ -56,6 +56,8 @@ void Game::Render()
 	player.Render(window);
 
 
+	// General debug info
+	// NOTE: Add frame rate display?
 
 	// Player debug info
 	std::string position = "Position: " +

@@ -20,11 +20,13 @@ private:
 	float airResistance;
 
 	bool grounded;
+
 	// Input
 	bool moveRight;
 	bool moveLeft;
 	bool crouch;
 	bool jump;
+	bool slide;
 	// Sprites and Textures
 	sf::Sprite sprite;
 	sf::Texture idleTexture;
@@ -32,6 +34,18 @@ private:
 	sf::Texture jumpIdleTexture;
 	sf::Texture jumpRunTexture;
 	sf::Texture crouchTexture;
+	sf::Texture slideTexture;
+
+	enum State
+	{
+		Idle,
+		Run,
+		JumpIdle,
+		JumpRun,
+		Crouch,
+		Slide
+	};
+	State animation; // NOTE: Should rename probably
 
 public:
 	// Constructor
