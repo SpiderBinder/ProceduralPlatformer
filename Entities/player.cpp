@@ -231,7 +231,8 @@ void Player::KeyboardInput(sf::Event event)
 			position.y -= baseSize.y * 0.25;
 
 		crouch = keyPressed ? true : false;
-
+		break;
+		
 	// Sliding
 	case sf::Keyboard::Scancode::LShift:
 		if (!grounded)
