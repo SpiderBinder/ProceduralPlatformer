@@ -11,6 +11,7 @@ private:
 	sf::Vector2f velocity;
 	sf::Vector2f acceleration;
 	sf::Vector2f size;
+	sf::Vector2f baseSize;
 
 	float runAcceleration;
 	float runSpeed;
@@ -65,5 +66,5 @@ public:
 	sf::Vector2f Velocity() { return velocity; }
 	sf::Vector2f Acceleration() { return acceleration; }
 	sf::Vector2f Size() { return size; }
-	
+	bool Sliding() { return slide; } // NOTE: Temporary for debugging because i am dumb
 };

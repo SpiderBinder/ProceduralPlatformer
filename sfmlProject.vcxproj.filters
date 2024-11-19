@@ -59,4 +59,7 @@
       <Filter>Resource Files\Sprites\Player</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt" />
+  </ItemGroup>
 </Project>

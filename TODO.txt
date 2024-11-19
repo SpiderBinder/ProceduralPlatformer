@@ -1,0 +1,12 @@
+TODO Right Now:
+ - Add effect to make you jump or slide when you touch the ground if you press the button while not grounded but right before you do like reverse coyote time
+
+TODO Very Soon:
+ - Make the camera follow the player after all this time please
+ - Start work on displaying a level and its rooms
+
+TODO Near Future:
+ - Do procedural (?) level generation
+
+TODO Far Future:
+ - This is a silly section for now just simply do not worry about it

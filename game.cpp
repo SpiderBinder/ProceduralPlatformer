@@ -81,6 +81,10 @@ void Game::Render()
 	debugText.setString(acceleration);
 	debugText.setPosition(10, 40);
 	window.draw(debugText);
+
+	debugText.setString(std::to_string(player.Sliding()));
+	debugText.setPosition(10, 55);
+	window.draw(debugText);
 }
 
 void Game::KeyboardEvent(sf::Event event)

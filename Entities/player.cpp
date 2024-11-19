@@ -27,6 +27,7 @@ Player::~Player()
 
 }
 
+
 bool Player::Init()
 {
 	bool success = true;
@@ -65,16 +66,23 @@ bool Player::Init()
 
 	size.x = sprite.getGlobalBounds().width;
 	size.y = sprite.getGlobalBounds().height;
+	baseSize = size;
 
 	return success;
 }
+
 
 void Player::Update(float dt)
 {
 	animation = Idle;
 
 	// Updating collision box
-	size.y = crouch ? 96.f : 128.f;
+	if (crouch)
+		size.y = baseSize.y * 0.75;
+	else if (slide)
+		size.y = baseSize.y * 0.5;
+	else
+		size.y = baseSize.y;
 
 	// NOTE: Having a seperate thing for acceleration may be stupid idk
 	acceleration.x = 0;
@@ -98,18 +106,25 @@ void Player::Update(float dt)
 			(grounded ? 1 : 0.3);
 		animation = grounded ? Run : JumpRun;
 	}
-	if (slide)
-	{
-		// NOTE: Put stuff here plz thx
-	}
-	if (moveLeft == moveRight)
-		animation = grounded ? Idle : JumpIdle;
-	if (crouch)
-		animation = Crouch;
 
+	if (moveLeft == moveRight)
+	{
+		animation = grounded ? Idle : JumpIdle;
+		slide = false;
+	}
+	else if (slide)
+	{
+		animation = Slide;
+		slide = grounded && (abs(velocity.x) > 10);
+	}
+	if (crouch)
+	{
+		animation = Crouch;
+		slide = false;
+	}
 
 	// Calculating resistance
-	float totalFriction = friction * (grounded ? (slide ? 2 : 8) : 1);
+	float totalFriction = friction * (grounded ? (slide ? 0.5 : 8) : 1);
 	float airResistance = velocity.x + (velocity.x >= 0 ? 30 : -30);
 	velocity.x -= dt * totalFriction * airResistance;
 
@@ -119,6 +134,7 @@ void Player::Update(float dt)
 	sprite.setPosition(position);
 }
 
+
 void Player::Collision(sf::Vector2f newPosition, bool ground)
 {
 	grounded = ground;
@@ -127,6 +143,7 @@ void Player::Collision(sf::Vector2f newPosition, bool ground)
 	position = newPosition;
 	sprite.setPosition(newPosition);
 }
+
 
 void Player::Render(sf::RenderWindow& window)
 {
@@ -177,6 +194,7 @@ void Player::Render(sf::RenderWindow& window)
 	window.draw(sprite);
 }
 
+
 void Player::KeyboardInput(sf::Event event)
 {
 	// Checking if event is 'KeyPressed' or 'KeyReleased'
@@ -203,14 +221,41 @@ void Player::KeyboardInput(sf::Event event)
 			grounded = false;
 		}
 		break;
+
 	// Crouching
 	case sf::Keyboard::Scancode::LControl:
 	case sf::Keyboard::Scancode::S:
+		if (!crouch && keyPressed)
+			position.y += baseSize.y * 0.25;
+		else if (crouch && !keyPressed)
+			position.y -= baseSize.y * 0.25;
+
 		crouch = keyPressed ? true : false;
-		break;
+
 	// Sliding
 	case sf::Keyboard::Scancode::LShift:
-		slide = keyPressed ? true : false;
+		if (!grounded)
+		{
+			slide = false;
+			break;
+		}
+		
+		if (keyPressed)
+		{
+			// NOTE: Make sure (at some point) sliding cannot be initiated when it would cause clipping
+			if ((moveLeft && velocity.x < -250) ||
+				(moveRight && velocity.x > 250))
+			{
+				position.y += !slide * baseSize.y * 0.5;
+				slide = true;
+			}
+		}
+		else
+		{
+			position.y -= slide * baseSize.y * 0.5;
+			slide = false;
+		}
+
 		break;
 	}
 }
