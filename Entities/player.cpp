@@ -20,6 +20,8 @@ Player::Player()
 	crouch = false;
 	jump = false;
 	slide = false;
+
+	inputQueued = false;
 }
 
 Player::~Player()
@@ -74,6 +76,16 @@ bool Player::Init()
 
 void Player::Update(float dt)
 {
+	// Ungrounded input handling
+	if (inputTimer.getElapsedTime().asMilliseconds() > 150)
+		inputQueued = false;
+	if (grounded && inputQueued)
+	{
+		KeyboardInput(inputQueue);
+
+		inputQueued = false;
+	}
+
 	animation = Idle;
 
 	// Updating collision box
@@ -215,8 +227,16 @@ void Player::KeyboardInput(sf::Event event)
 
 	// Jumping
 	case sf::Keyboard::Scancode::Space:
+		if (!grounded)
+		{
+			inputQueue = event;
+			inputQueued = true;
+			inputTimer.restart();
+			break;
+		}
+
 		jump = keyPressed ? true : false;
-		if (grounded && jump)
+		if (jump)
 		{
 			velocity.y = -jumpSpeed * 3;
 			grounded = false;
@@ -238,7 +258,9 @@ void Player::KeyboardInput(sf::Event event)
 	case sf::Keyboard::Scancode::LShift:
 		if (!grounded)
 		{
-			slide = false;
+			inputQueue = event;
+			inputQueued = true;
+			inputTimer.restart();
 			break;
 		}
 		
@@ -266,3 +288,4 @@ void Player::MouseInput(sf::Event event)
 {
 	// NOTE: Currently unused
 }
+

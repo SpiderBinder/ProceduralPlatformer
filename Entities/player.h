@@ -22,6 +22,12 @@ private:
 
 	bool grounded;
 
+	// Handling 'early' inputs
+	// Grounded inputs done right before becoming grounded
+	sf::Clock inputTimer;
+	sf::Event inputQueue; // NOTE: Potentially temporary name
+	bool inputQueued;
+
 	// Input
 	bool moveRight;
 	bool moveLeft;

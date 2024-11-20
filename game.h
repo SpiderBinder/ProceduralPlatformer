@@ -38,7 +38,9 @@ public:
 	// Input Management
 	void KeyboardEvent(sf::Event event);
 	void MouseEvent(sf::Event event);
-
+	// Physics
 	void CollisionDetect();
 
+	// Public get-only varaibles
+	int Frames() { return frames; }
 };
