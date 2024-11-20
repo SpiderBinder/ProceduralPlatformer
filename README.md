@@ -1,3 +1,3 @@
-# RandomPlatformer
-Little platformer game I'm making to practice stuff  
-Isn't very good but neither am I  
+# ProceduralPlatformer  
+Little platforming game project I'm working on to get used to SFML and game dev in general  
+Don't expect much I am very inexperienced

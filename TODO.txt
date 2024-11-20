@@ -1,0 +1,13 @@
+TODO Right Now:
+ - Fix being ungrounded only being applied when jumping; it's a big problem.
+
+TODO Very Soon:
+ - Make superjump height based on how far player has fallen while crouching
+ - Make the camera centre on the player and follow them.
+ - Start work on displaying a level and its rooms.
+
+TODO Near Future:
+ - Do procedural (?) level generation.
+
+TODO Far Future:
+ - This is a silly section for now just simply do not worry about it.

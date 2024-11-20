@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include "player.h"
 
 // Constructor
@@ -7,16 +7,21 @@ Player::Player()
 	position = sf::Vector2f(100.f, 100.f);
 
 	// Physics
-	speed = 300.f;
+	runAcceleration = 3000.f;
+	runSpeed = 300.f;
 	jumpSpeed = 200.f;
 	gravity = 1500.f;
+	friction = 1.f; // NOTE: Temporary value until individual material friction is added
 	grounded = false;
 
 	// Input
 	moveLeft = false;
 	moveRight = false;
-	moveDown = false;
-	moveJump = false;
+	crouch = false;
+	jump = false;
+	slide = false;
+
+	inputQueued = false;
 }
 
 Player::~Player()
@@ -24,25 +29,42 @@ Player::~Player()
 
 }
 
+
 bool Player::Init()
 {
+	bool success = true;
+
 	// Loading Player Textures
 	if (!idleTexture.loadFromFile("Content/Sprites/Player/Idle.png")) {
-		std::cout << "Error - Player Idle.png failed to load" << std::endl;
-		return false;
+		std::cout << "Error - Player \'Idle.png\' failed to load" << std::endl;
+		success = false;
 	}
+
 	if (!runTexture.loadFromFile("Content/Sprites/Player/Run.png")) {
-		std::cout << "Error - Player Run.png failed to load" << std::endl;
-		return false;
+		std::cout << "Error - Player \'Run.png\' failed to load" << std::endl;
+		success = false;
+	}
+	if (!skidTexture.loadFromFile("Content/Sprites/Player/Skid.png")) {
+		std::cout << "Error - Player \'Skid.png\' failed to load" << std::endl;
+		success = false;
 	}
 
 	if (!jumpIdleTexture.loadFromFile("Content/Sprites/Player/JumpIdle.png")) {
-		std::cout << "Error - Player JumpIdle.png failed to load" << std::endl;
-		return false;
+		std::cout << "Error - Player \'JumpIdle.png\' failed to load" << std::endl;
+		success = false;
 	}
 	if (!jumpRunTexture.loadFromFile("Content/Sprites/Player/JumpRun.png")) {
-		std::cout << "Error - Player JumpRun.png failed to load" << std::endl;
-		return false;
+		std::cout << "Error - Player \'JumpRun.png\' failed to load" << std::endl;
+		success = false;
+	}
+
+	if (!crouchTexture.loadFromFile("Content/Sprites/Player/Crouch.png")) {
+		std::cout << "Error - Player \'Crouch.png\' failed to load" << std::endl;
+		success = false;
+	}
+	if (!slideTexture.loadFromFile("Content/Sprites/Player/Slide.png")) {
+		std::cout << "Error - Player \'Slide.png\' failed to load" << std::endl;
+		success = false;
 	}
 
 	sprite.setTexture(idleTexture);
@@ -51,24 +73,140 @@ bool Player::Init()
 
 	size.x = sprite.getGlobalBounds().width;
 	size.y = sprite.getGlobalBounds().height;
+	baseSize = size;
 
-	return true;
+	return success;
 }
+
 
 void Player::Update(float dt)
 {
-	// Checking for grounded state for applying gravity (may be able to just remove this tbh)
-	if (grounded)
-		velocity.y = 0.f;
-	else
-		velocity.y += gravity * dt;
-
-	// Basic animation
-	if (moveLeft == moveRight)
-		sprite.setTexture(grounded ? idleTexture : jumpIdleTexture);
-	else if (moveLeft)
+	// Ungrounded input handling
+	if (inputClock.getElapsedTime().asMilliseconds() > 150)
+		inputQueued = false;
+	if (grounded && inputQueued)
 	{
-		sprite.setTexture(grounded ? runTexture : jumpRunTexture);
+		KeyboardInput(inputQueue);
+
+		inputQueued = false;
+	}
+
+	// Superjump logic
+	if (crouch)
+	{
+		superjumpClock.restart();
+	}
+
+	animation = Idle;
+
+	// Updating collision box
+	if (crouch)
+		size.y = baseSize.y * 0.75;
+	else if (slide)
+		size.y = baseSize.y * 0.5;
+	else
+		size.y = baseSize.y;
+
+	// NOTE: Having a seperate thing for acceleration may be stupid idk
+	acceleration.x = 0;
+	acceleration.y = 0;
+
+	// Applying gravity
+	acceleration.y += crouch ? gravity * 2 : gravity;
+
+	// Movement physics
+	if (moveRight && !slide)
+	{
+		acceleration.x += runAcceleration *
+			(!crouch ? 1 : 0.4) *
+			(grounded ? 1 : 0.2);
+		animation = grounded ? Run : JumpRun;
+	}
+	if (moveLeft && !slide)
+	{
+		acceleration.x += -runAcceleration *
+			(!crouch ? 1 : 0.4) *
+			(grounded ? 1 : 0.2);
+		animation = grounded ? Run : JumpRun;
+	}
+
+	if (moveLeft == moveRight)
+	{
+		animation = grounded ? Idle : JumpIdle;
+		if (abs(velocity.x) > 10 && grounded)
+		{
+			animation = Skid;
+		}
+		slide = false;
+	}
+	else if (slide)
+	{
+		animation = Slide;
+		slide = grounded && (abs(velocity.x) > 100 && grounded);
+		position.y -= !slide * baseSize.y * 0.5;
+	}
+	if (crouch)
+	{
+		animation = Crouch;
+		slide = false;
+	}
+
+	// Calculating resistance
+	float totalFriction = friction * (grounded ? (slide ? 0.5 : 8) : 1);
+	float airResistance = velocity.x + (velocity.x >= 0 ? 30 : -30);
+	velocity.x -= dt * totalFriction * airResistance;
+
+	// Updating position from velocity
+	velocity += acceleration * dt;
+	position += velocity * dt;
+	sprite.setPosition(position);
+}
+
+
+void Player::Collision(sf::Vector2f newPosition, bool ground)
+{
+	grounded = ground;
+	if (grounded)
+		velocity.y = 0;
+	position = newPosition;
+	sprite.setPosition(newPosition);
+}
+
+
+void Player::Render(sf::RenderWindow& window)
+{
+	// Basic 'animation'
+	switch (animation)
+	{
+	case Idle:
+		sprite.setTexture(idleTexture, true);
+		break;
+	case Run:
+		sprite.setTexture(runTexture, true);
+		break;
+	case JumpIdle:
+		sprite.setTexture(jumpIdleTexture, true);
+		break;
+	case JumpRun:
+		sprite.setTexture(jumpRunTexture, true);
+		break;
+	case Crouch:
+		sprite.setTexture(crouchTexture, true);
+		break;
+	case Slide:
+		sprite.setTexture(slideTexture, true);
+		break;
+	case Skid:
+		sprite.setTexture(skidTexture, true);
+		break;
+	default:
+		sprite.setTexture(idleTexture, true);
+		break;
+	}
+
+	if (moveLeft)
+	{
+		// Flip sprite left
 		sprite.setTextureRect(sf::IntRect(
 			sprite.getLocalBounds().width,
 			0,
@@ -77,53 +215,90 @@ void Player::Update(float dt)
 	}
 	else if (moveRight)
 	{
-		sprite.setTexture(grounded ? runTexture : jumpRunTexture);
+		// Flip sprite right
 		sprite.setTextureRect(sf::IntRect(
 			0, 0, sprite.getLocalBounds().width,
 			sprite.getLocalBounds().height));
 	}
 
-	// Updating position from velocity
-	position += velocity * dt;
-	sprite.setPosition(position);
-}
-
-void Player::Collision(sf::Vector2f newPosition, bool ground)
-{
-	grounded = ground;
-	position = newPosition;
-	sprite.setPosition(newPosition);
-}
-
-void Player::Render(sf::RenderWindow& window)
-{
 	window.draw(sprite);
 }
+
 
 void Player::KeyboardInput(sf::Event event)
 {
 	// Checking if event is 'KeyPressed' or 'KeyReleased'
 	bool keyPressed = event.type == sf::Event::KeyPressed;
+
 	// Input cases
 	switch (event.key.scancode)
 	{
+	// Moving right
 	case sf::Keyboard::Scancode::D:
-		velocity.x += keyPressed && !moveRight ? speed : 0;
-		velocity.x += !keyPressed && moveRight ? -speed : 0;
 		moveRight = keyPressed ? true : false;
 		break;
+	// Moving left
 	case sf::Keyboard::Scancode::A:
-		velocity.x += keyPressed && !moveLeft ? -speed : 0;
-		velocity.x += !keyPressed && moveLeft ? speed : 0;
 		moveLeft = keyPressed ? true : false;
 		break;
 
+	// Jumping
 	case sf::Keyboard::Scancode::Space:
-		if (grounded && keyPressed)
+		if (!grounded)
 		{
-			velocity.y = -jumpSpeed*3;
+			inputQueue = event;
+			inputQueued = true;
+			inputClock.restart();
+			break;
+		}
+
+		jump = keyPressed ? true : false;
+		if (jump)
+		{
+			if (superjumpClock.getElapsedTime().asMilliseconds() < 100 && !crouch)
+				velocity.y = -jumpSpeed * 4;
+			else
+				velocity.y = -jumpSpeed * 3;
 			grounded = false;
 		}
+		break;
+	// Crouching
+	case sf::Keyboard::Scancode::LControl:
+	case sf::Keyboard::Scancode::S:
+		if (!crouch && keyPressed)
+			position.y += baseSize.y * 0.25;
+		else if (crouch && !keyPressed)
+			position.y -= baseSize.y * 0.25;
+
+		crouch = keyPressed ? true : false;
+		break;
+		
+	// Sliding
+	case sf::Keyboard::Scancode::LShift:
+		if (!grounded)
+		{
+			inputQueue = event;
+			inputQueued = true;
+			inputClock.restart();
+			break;
+		}
+		
+		if (keyPressed)
+		{
+			// NOTE: Make sure (at some point) sliding cannot be initiated when it would cause clipping
+			if ((moveLeft && velocity.x < -250) ||
+				(moveRight && velocity.x > 250))
+			{
+				position.y += !slide * baseSize.y * 0.5;
+				slide = true;
+			}
+		}
+		else
+		{
+			position.y -= slide * baseSize.y * 0.5;
+			slide = false;
+		}
+
 		break;
 	}
 }
@@ -132,3 +307,4 @@ void Player::MouseInput(sf::Event event)
 {
 	// NOTE: Currently unused
 }
+

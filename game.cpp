@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include "game.h"
 
 Game::Game(sf::RenderWindow& game_window) 
@@ -13,7 +13,7 @@ Game::Game(sf::RenderWindow& game_window)
 
 Game::~Game()
 {
-
+	frameCounter.restart();
 }
 
 bool Game::Init()
@@ -32,12 +32,27 @@ bool Game::Init()
 	debugText.setCharacterSize(10);
 	debugText.setPosition(10, 10);
 
+	frameText.setFont(debugFont);
+	frameText.setFillColor(sf::Color(50, 200, 50, 200));
+	frameText.setCharacterSize(8);
+	frameText.setPosition(window.getSize().x - 40, 10);
+	frameText.setString("0");
+
+	frames = 0;
+
 	return true;
 }
 
 void Game::Update(float dt)
 {
 	player.Update(dt);
+	frames++;
+	if (frameCounter.getElapsedTime().asMilliseconds() > 1000)
+	{
+		frameCounter.restart();
+		frameText.setString(std::to_string(frames));
+		frames = 0;
+	}
 
 	CollisionDetect();
 }
@@ -55,8 +70,34 @@ void Game::Render()
 {
 	player.Render(window);
 
-	debugText.setString(std::to_string(player.Position().y));
+
+	// General debug info
+	// NOTE: Add frame rate display?
+
+	// Player debug info
+	std::string position = "Position: " +
+		std::to_string(player.Position().x) + ' ' +
+		std::to_string(player.Position().y);
+
+	std::string velocity = "Velocity: " + 
+		std::to_string(player.Velocity().x) + ' ' +
+		std::to_string(player.Velocity().y);
+
+	std::string acceleration = "Acceleration: " +
+		std::to_string(player.Acceleration().x) + ' ' +
+		std::to_string(player.Acceleration().y);
+
+	debugText.setString(position);
+	debugText.setPosition(10, 10);
 	window.draw(debugText);
+	debugText.setString(velocity);
+	debugText.setPosition(10, 25);
+	window.draw(debugText);
+	debugText.setString(acceleration);
+	debugText.setPosition(10, 40);
+	window.draw(debugText);
+
+	window.draw(frameText);
 }
 
 void Game::KeyboardEvent(sf::Event event)
