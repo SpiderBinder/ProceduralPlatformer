@@ -39,8 +39,13 @@ bool Player::Init()
 		std::cout << "Error - Player \'Idle.png\' failed to load" << std::endl;
 		success = false;
 	}
+
 	if (!runTexture.loadFromFile("Content/Sprites/Player/Run.png")) {
 		std::cout << "Error - Player \'Run.png\' failed to load" << std::endl;
+		success = false;
+	}
+	if (!skidTexture.loadFromFile("Content/Sprites/Player/Skid.png")) {
+		std::cout << "Error - Player \'Skid.png\' failed to load" << std::endl;
 		success = false;
 	}
 
@@ -77,13 +82,19 @@ bool Player::Init()
 void Player::Update(float dt)
 {
 	// Ungrounded input handling
-	if (inputTimer.getElapsedTime().asMilliseconds() > 150)
+	if (inputClock.getElapsedTime().asMilliseconds() > 150)
 		inputQueued = false;
 	if (grounded && inputQueued)
 	{
 		KeyboardInput(inputQueue);
 
 		inputQueued = false;
+	}
+
+	// Superjump logic
+	if (crouch)
+	{
+		superjumpClock.restart();
 	}
 
 	animation = Idle;
@@ -122,12 +133,16 @@ void Player::Update(float dt)
 	if (moveLeft == moveRight)
 	{
 		animation = grounded ? Idle : JumpIdle;
+		if (abs(velocity.x) > 10 && grounded)
+		{
+			animation = Skid;
+		}
 		slide = false;
 	}
 	else if (slide)
 	{
 		animation = Slide;
-		slide = grounded && (abs(velocity.x) > 10);
+		slide = grounded && (abs(velocity.x) > 10 && grounded);
 		position.y -= !slide * baseSize.y * 0.5;
 	}
 	if (crouch)
@@ -181,7 +196,9 @@ void Player::Render(sf::RenderWindow& window)
 	case Slide:
 		sprite.setTexture(slideTexture, true);
 		break;
-
+	case Skid:
+		sprite.setTexture(skidTexture, true);
+		break;
 	default:
 		sprite.setTexture(idleTexture, true);
 		break;
@@ -231,18 +248,20 @@ void Player::KeyboardInput(sf::Event event)
 		{
 			inputQueue = event;
 			inputQueued = true;
-			inputTimer.restart();
+			inputClock.restart();
 			break;
 		}
 
 		jump = keyPressed ? true : false;
 		if (jump)
 		{
-			velocity.y = -jumpSpeed * 3;
+			if (superjumpClock.getElapsedTime().asMilliseconds() < 100)
+				velocity.y = -jumpSpeed * 4;
+			else
+				velocity.y = -jumpSpeed * 3;
 			grounded = false;
 		}
 		break;
-
 	// Crouching
 	case sf::Keyboard::Scancode::LControl:
 	case sf::Keyboard::Scancode::S:
@@ -260,7 +279,7 @@ void Player::KeyboardInput(sf::Event event)
 		{
 			inputQueue = event;
 			inputQueued = true;
-			inputTimer.restart();
+			inputClock.restart();
 			break;
 		}
 		

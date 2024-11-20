@@ -97,10 +97,6 @@ void Game::Render()
 	debugText.setPosition(10, 40);
 	window.draw(debugText);
 
-	debugText.setString(std::to_string(player.Sliding()));
-	debugText.setPosition(10, 55);
-	window.draw(debugText);
-
 	window.draw(frameText);
 }
 

@@ -24,9 +24,12 @@ private:
 
 	// Handling 'early' inputs
 	// Grounded inputs done right before becoming grounded
-	sf::Clock inputTimer;
+	sf::Clock inputClock;
 	sf::Event inputQueue; // NOTE: Potentially temporary name
 	bool inputQueued;
+
+	// Recording time between releasing a crouch and jumping
+	sf::Clock superjumpClock;
 
 	// Input
 	bool moveRight;
@@ -37,9 +40,12 @@ private:
 	// Sprites and Textures
 	sf::Sprite sprite;
 	sf::Texture idleTexture;
+
 	sf::Texture runTexture;
+	sf::Texture skidTexture;
 	sf::Texture jumpIdleTexture;
 	sf::Texture jumpRunTexture;
+
 	sf::Texture crouchTexture;
 	sf::Texture slideTexture;
 
@@ -47,6 +53,7 @@ private:
 	{
 		Idle,
 		Run,
+		Skid,
 		JumpIdle,
 		JumpRun,
 		Crouch,
@@ -72,5 +79,4 @@ public:
 	sf::Vector2f Velocity() { return velocity; }
 	sf::Vector2f Acceleration() { return acceleration; }
 	sf::Vector2f Size() { return size; }
-	bool Sliding() { return slide; } // NOTE: Temporary for debugging because i am dumb
 };
