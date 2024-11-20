@@ -13,6 +13,8 @@ private:
 	// Misc
 	sf::RenderWindow& window;
 	bool menu;
+	int frames;
+	sf::Clock frameCounter;
 
 	// Player
 	Player player;
@@ -24,6 +26,7 @@ private:
 	// Fonts and Texts
 	sf::Font debugFont;
 	sf::Text debugText;
+	sf::Text frameText;
 
 public:
 	// Constructor and basic game loop

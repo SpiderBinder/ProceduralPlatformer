@@ -13,7 +13,7 @@ Game::Game(sf::RenderWindow& game_window)
 
 Game::~Game()
 {
-
+	frameCounter.restart();
 }
 
 bool Game::Init()
@@ -32,12 +32,27 @@ bool Game::Init()
 	debugText.setCharacterSize(10);
 	debugText.setPosition(10, 10);
 
+	frameText.setFont(debugFont);
+	frameText.setFillColor(sf::Color(50, 200, 50, 200));
+	frameText.setCharacterSize(8);
+	frameText.setPosition(window.getSize().x - 40, 10);
+	frameText.setString("0");
+
+	frames = 0;
+
 	return true;
 }
 
 void Game::Update(float dt)
 {
 	player.Update(dt);
+	frames++;
+	if (frameCounter.getElapsedTime().asMilliseconds() > 1000)
+	{
+		frameCounter.restart();
+		frameText.setString(std::to_string(frames));
+		frames = 0;
+	}
 
 	CollisionDetect();
 }
@@ -85,6 +100,8 @@ void Game::Render()
 	debugText.setString(std::to_string(player.Sliding()));
 	debugText.setPosition(10, 55);
 	window.draw(debugText);
+
+	window.draw(frameText);
 }
 
 void Game::KeyboardEvent(sf::Event event)

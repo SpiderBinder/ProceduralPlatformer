@@ -116,6 +116,7 @@ void Player::Update(float dt)
 	{
 		animation = Slide;
 		slide = grounded && (abs(velocity.x) > 10);
+		position.y -= !slide * baseSize.y * 0.5;
 	}
 	if (crouch)
 	{
