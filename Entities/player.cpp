@@ -119,14 +119,14 @@ void Player::Update(float dt)
 	{
 		acceleration.x += runAcceleration *
 			(!crouch ? 1 : 0.4) *
-			(grounded ? 1 : 0.3);
+			(grounded ? 1 : 0.2);
 		animation = grounded ? Run : JumpRun;
 	}
 	if (moveLeft && !slide)
 	{
 		acceleration.x += -runAcceleration *
 			(!crouch ? 1 : 0.4) *
-			(grounded ? 1 : 0.3);
+			(grounded ? 1 : 0.2);
 		animation = grounded ? Run : JumpRun;
 	}
 
@@ -142,7 +142,7 @@ void Player::Update(float dt)
 	else if (slide)
 	{
 		animation = Slide;
-		slide = grounded && (abs(velocity.x) > 10 && grounded);
+		slide = grounded && (abs(velocity.x) > 100 && grounded);
 		position.y -= !slide * baseSize.y * 0.5;
 	}
 	if (crouch)
@@ -255,7 +255,7 @@ void Player::KeyboardInput(sf::Event event)
 		jump = keyPressed ? true : false;
 		if (jump)
 		{
-			if (superjumpClock.getElapsedTime().asMilliseconds() < 100)
+			if (superjumpClock.getElapsedTime().asMilliseconds() < 100 && !crouch)
 				velocity.y = -jumpSpeed * 4;
 			else
 				velocity.y = -jumpSpeed * 3;
