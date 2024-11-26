@@ -163,16 +163,6 @@ void Player::Update(float dt)
 }
 
 
-void Player::Collision(sf::Vector2f newPosition, bool ground)
-{
-	grounded = ground;
-	if (grounded)
-		velocity.y = 0;
-	position = newPosition;
-	sprite.setPosition(newPosition);
-}
-
-
 void Player::Render(sf::RenderWindow& window)
 {
 	// Basic 'animation'
@@ -222,6 +212,16 @@ void Player::Render(sf::RenderWindow& window)
 	}
 
 	window.draw(sprite);
+}
+
+
+void Player::Collision(sf::Vector2f newPosition, bool ground)
+{
+	grounded = ground;
+	if (grounded)
+		velocity.y = 0;
+	position = newPosition;
+	sprite.setPosition(newPosition);
 }
 
 
