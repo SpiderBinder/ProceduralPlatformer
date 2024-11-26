@@ -1,4 +1,7 @@
 
+#ifndef _PROCEDURALPLATFORMER_GAME_H_
+#define _PROCEDURALPLATFORMER_GAME_H_
+
 #include <iostream>
 #include <string>
 #include <SFML/Graphics.hpp>
@@ -32,15 +35,17 @@ public:
 	// Constructor and basic game loop
 	Game(sf::RenderWindow& window);
 	~Game();
-	bool Init();
-	void Update(float dt);
-	void Render();
+	bool init();
+	void update(float dt);
+	void render();
 	// Input Management
-	void KeyboardEvent(sf::Event event);
-	void MouseEvent(sf::Event event);
+	void keyboardEvent(sf::Event event);
+	void mouseEvent(sf::Event event);
 	// Physics
-	void CollisionDetect();
+	void collisionDetect();
 
 	// Public get-only varaibles
-	int Frames() { return frames; }
+	int readFrames() { return frames; }
 };
+
+#endif // _PROCEDURALPLATFORMER_GAME_H_

@@ -30,39 +30,39 @@ Player::~Player()
 }
 
 
-bool Player::Init()
+bool Player::init()
 {
 	bool success = true;
 
 	// Loading Player Textures
-	if (!idleTexture.loadFromFile("Content/Sprites/Player/Idle.png")) {
+	if (!idleTexture.loadFromFile("../Content/Sprites/Player/Idle.png")) {
 		std::cout << "Error - Player \'Idle.png\' failed to load" << std::endl;
 		success = false;
 	}
 
-	if (!runTexture.loadFromFile("Content/Sprites/Player/Run.png")) {
+	if (!runTexture.loadFromFile("../Content/Sprites/Player/Run.png")) {
 		std::cout << "Error - Player \'Run.png\' failed to load" << std::endl;
 		success = false;
 	}
-	if (!skidTexture.loadFromFile("Content/Sprites/Player/Skid.png")) {
+	if (!skidTexture.loadFromFile("../Content/Sprites/Player/Skid.png")) {
 		std::cout << "Error - Player \'Skid.png\' failed to load" << std::endl;
 		success = false;
 	}
 
-	if (!jumpIdleTexture.loadFromFile("Content/Sprites/Player/JumpIdle.png")) {
+	if (!jumpIdleTexture.loadFromFile("../Content/Sprites/Player/JumpIdle.png")) {
 		std::cout << "Error - Player \'JumpIdle.png\' failed to load" << std::endl;
 		success = false;
 	}
-	if (!jumpRunTexture.loadFromFile("Content/Sprites/Player/JumpRun.png")) {
+	if (!jumpRunTexture.loadFromFile("../Content/Sprites/Player/JumpRun.png")) {
 		std::cout << "Error - Player \'JumpRun.png\' failed to load" << std::endl;
 		success = false;
 	}
 
-	if (!crouchTexture.loadFromFile("Content/Sprites/Player/Crouch.png")) {
+	if (!crouchTexture.loadFromFile("../Content/Sprites/Player/Crouch.png")) {
 		std::cout << "Error - Player \'Crouch.png\' failed to load" << std::endl;
 		success = false;
 	}
-	if (!slideTexture.loadFromFile("Content/Sprites/Player/Slide.png")) {
+	if (!slideTexture.loadFromFile("../Content/Sprites/Player/Slide.png")) {
 		std::cout << "Error - Player \'Slide.png\' failed to load" << std::endl;
 		success = false;
 	}
@@ -79,14 +79,14 @@ bool Player::Init()
 }
 
 
-void Player::Update(float dt)
+void Player::update(float dt)
 {
 	// Ungrounded input handling
 	if (inputClock.getElapsedTime().asMilliseconds() > 150)
 		inputQueued = false;
 	if (grounded && inputQueued)
 	{
-		KeyboardInput(inputQueue);
+		keyboardInput(inputQueue);
 
 		inputQueued = false;
 	}
@@ -163,7 +163,7 @@ void Player::Update(float dt)
 }
 
 
-void Player::Render(sf::RenderWindow& window)
+void Player::render(sf::RenderWindow& window)
 {
 	// Basic 'animation'
 	switch (animation)
@@ -215,17 +215,19 @@ void Player::Render(sf::RenderWindow& window)
 }
 
 
-void Player::Collision(sf::Vector2f newPosition, bool ground)
+void Player::collision(sf::Vector2f newPosition, sf::Vector2f newVelocity, bool ground = false)
 {
 	grounded = ground;
+	position = newPosition;
+	velocity = newVelocity;
+
 	if (grounded)
 		velocity.y = 0;
-	position = newPosition;
 	sprite.setPosition(newPosition);
 }
 
 
-void Player::KeyboardInput(sf::Event event)
+void Player::keyboardInput(sf::Event event)
 {
 	// Checking if event is 'KeyPressed' or 'KeyReleased'
 	bool keyPressed = event.type == sf::Event::KeyPressed;
@@ -303,7 +305,7 @@ void Player::KeyboardInput(sf::Event event)
 	}
 }
 
-void Player::MouseInput(sf::Event event)
+void Player::mouseInput(sf::Event event)
 {
 	// NOTE: Currently unused
 }

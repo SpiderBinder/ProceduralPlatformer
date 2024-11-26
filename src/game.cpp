@@ -16,13 +16,13 @@ Game::~Game()
 	frameCounter.restart();
 }
 
-bool Game::Init()
+bool Game::init()
 {
-	if (!player.Init())
+	if (!player.init())
 		return false;
 
 	// Text for displaying debug info
-	if (!debugFont.loadFromFile("Content/Text/Fonts/Pixeled.ttf"))
+	if (!debugFont.loadFromFile("../Content/Text/Fonts/Pixeled.ttf"))
 	{
 		std::cout << "Error - debugFont failed to load" << std::endl;
 		return false;
@@ -43,9 +43,9 @@ bool Game::Init()
 	return true;
 }
 
-void Game::Update(float dt)
+void Game::update(float dt)
 {
-	player.Update(dt);
+	player.update(dt);
 	frames++;
 	if (frameCounter.getElapsedTime().asMilliseconds() > 1000)
 	{
@@ -54,21 +54,21 @@ void Game::Update(float dt)
 		frames = 0;
 	}
 
-	CollisionDetect();
+	collisionDetect();
 }
 
-void Game::CollisionDetect()
+void Game::collisionDetect()
 {
-	if (player.Position().y + player.Size().y > floor)
+	if (player.readPosition().y + player.readSize().y > floor)
 	{
-		sf::Vector2f newPosition(player.Position().x, floor - player.Size().y);
-		player.Collision(newPosition, true);
+		sf::Vector2f newPosition(player.readPosition().x, floor - player.readSize().y);
+		player.collision(newPosition, player.readVelocity());
 	}
 }
 
-void Game::Render()
+void Game::render()
 {
-	player.Render(window);
+	player.render(window);
 
 
 	// General debug info
@@ -76,16 +76,16 @@ void Game::Render()
 
 	// Player debug info
 	std::string position = "Position: " +
-		std::to_string(player.Position().x) + ' ' +
-		std::to_string(player.Position().y);
+		std::to_string(player.readPosition().x) + ' ' +
+		std::to_string(player.readPosition().y);
 
 	std::string velocity = "Velocity: " + 
-		std::to_string(player.Velocity().x) + ' ' +
-		std::to_string(player.Velocity().y);
+		std::to_string(player.readVelocity().x) + ' ' +
+		std::to_string(player.readVelocity().y);
 
 	std::string acceleration = "Acceleration: " +
-		std::to_string(player.Acceleration().x) + ' ' +
-		std::to_string(player.Acceleration().y);
+		std::to_string(player.readAcceleration().x) + ' ' +
+		std::to_string(player.readAcceleration().y);
 
 	debugText.setString(position);
 	debugText.setPosition(10, 10);
@@ -100,7 +100,7 @@ void Game::Render()
 	window.draw(frameText);
 }
 
-void Game::KeyboardEvent(sf::Event event)
+void Game::keyboardEvent(sf::Event event)
 {
 	// Check for window focus
 	if (!window.hasFocus())
@@ -108,7 +108,7 @@ void Game::KeyboardEvent(sf::Event event)
 
 	if (!menu)
 	{
-		player.KeyboardInput(event);
+		player.keyboardInput(event);
 	}
 	else
 	{
@@ -116,7 +116,7 @@ void Game::KeyboardEvent(sf::Event event)
 	}
 }
 
-void Game::MouseEvent(sf::Event event)
+void Game::mouseEvent(sf::Event event)
 {
 	// NOTE: Currently unused
 }

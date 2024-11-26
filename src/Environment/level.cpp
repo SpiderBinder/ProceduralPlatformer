@@ -2,39 +2,13 @@
 #include "level.h"
 
 
-// Start of 'Room' class members
-Room::Room(std::array<std::array<int, size>, size> tileArray)
-	:tileArray(tileArray)
-{
-	
-}
-
-void Room::Update(float dt)
-{
-
-}
-
-void Room::Render(sf::RenderWindow& window, sf::Texture textures[15])
-{
-	
-}
-
-bool Room::CollisionDetect(sf::IntRect playerRect)
-{
-	
-
-	return false;
-}
-
-
-// Start of 'Level' class members
 Level::Level(std::string roomDirectory, std::string textureDirectory)
 	: roomDirectory(roomDirectory), textureDirectory(textureDirectory)
 {
 
 }
 
-bool Level::Init()
+bool Level::init()
 {
 	bool success = true;
 
@@ -53,25 +27,25 @@ bool Level::Init()
 	return success;
 }
 
-void Level::LoadRooms()
+void Level::loadRooms()
 {
 
 }
 
-void Level::Generate()
+void Level::generate()
 {
 
 }
 
-void Level::Update(float dt)
+void Level::update(float dt)
 {
 	for (Room room : rooms)
 	{
-		room.Update(dt);
+		room.update(dt);
 	}
 }
 
-void Level::Render(sf::RenderWindow& window)
+void Level::render(sf::RenderWindow& window)
 {
 
 }

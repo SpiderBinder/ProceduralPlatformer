@@ -30,36 +30,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Entities\player.cpp">
-      <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Environment\level.cpp">
-      <Filter>Source Files\Environment</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="game.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Entities\player.h">
-      <Filter>Source Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Environment\level.h">
-      <Filter>Source Files\Environment</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="Content\Sprites\Player\Idle.png">
       <Filter>Resource Files\Sprites\Player</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Entities\player.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Environment\level.cpp">
+      <Filter>Source Files\Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Environment\room.cpp">
+      <Filter>Source Files\Environment</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Entities\player.h">
+      <Filter>Source Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Environment\level.h">
+      <Filter>Source Files\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Environment\room.h">
+      <Filter>Source Files\Environment</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

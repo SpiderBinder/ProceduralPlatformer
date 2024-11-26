@@ -1,5 +1,9 @@
 
 #include <SFML/Graphics.hpp>
+
+#ifndef _PROCEDURALPLATFORMER_ENTITIES_PLAYER_H_
+#define _PROCEDURALPLATFORMER_ENTITIES_PLAYER_H_
+
 #include <algorithm>
 #include <iostream>
 
@@ -66,17 +70,19 @@ public:
 	Player();
 	~Player();
 	// Initialisation + Update/Render
-	bool Init();
-	void Update(float dt);
-	void Render(sf::RenderWindow& window);
+	bool init();
+	void update(float dt);
+	void render(sf::RenderWindow& window);
 	// Input Management
-	void KeyboardInput(sf::Event event);
-	void MouseInput(sf::Event event);
+	void keyboardInput(sf::Event event);
+	void mouseInput(sf::Event event);
 
-	void Collision(sf::Vector2f newPosition, bool ground);
+	void collision(sf::Vector2f newPosition, sf::Vector2f newVelocity, bool ground = false);
 
-	sf::Vector2f Position() { return position; }
-	sf::Vector2f Velocity() { return velocity; }
-	sf::Vector2f Acceleration() { return acceleration; }
-	sf::Vector2f Size() { return size; }
+	sf::Vector2f readPosition() { return position; }
+	sf::Vector2f readVelocity() { return velocity; }
+	sf::Vector2f readAcceleration() { return acceleration; }
+	sf::Vector2f readSize() { return size; }
 };
+
+#endif // _PROCEDURALPLATFORMER_ENTITIES_PLAYER_H_

@@ -16,7 +16,7 @@ int main()
     //window.setVerticalSyncEnabled(true);
 
     Game game(window);
-    if (!game.Init())
+    if (!game.init())
         return 0;
 
     sf::Clock clock;
@@ -41,16 +41,16 @@ int main()
             }
 
             if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased)
-                game.KeyboardEvent(event);
+                game.keyboardEvent(event);
             if (event.type == sf::Event::MouseButtonPressed)
-                game.MouseEvent(event);
+                game.mouseEvent(event);
             
         }
 
-        game.Update(dt);
+        game.update(dt);
 
         window.clear(sf::Color::Cyan);
-        game.Render();
+        game.render();
         window.display();
     }
 

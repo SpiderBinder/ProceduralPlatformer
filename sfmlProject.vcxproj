@@ -24,6 +24,7 @@
     <ProjectGuid>{94261664-3548-4614-ac99-2ba2ebce0911}</ProjectGuid>
     <RootNamespace>sfmlProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>ProceduralPlatformer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -139,21 +140,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Entities\player.cpp" />
-    <ClCompile Include="Environment\level.cpp" />
-    <ClCompile Include="game.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Entities\player.h" />
-    <ClInclude Include="Environment\level.h" />
-    <ClInclude Include="game.h" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="Content\Sprites\Player\Idle.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Entities\player.cpp" />
+    <ClCompile Include="src\Environment\level.cpp" />
+    <ClCompile Include="src\Environment\room.cpp" />
+    <ClCompile Include="src\game.cpp" />
+    <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Entities\player.h" />
+    <ClInclude Include="src\Environment\level.h" />
+    <ClInclude Include="src\Environment\room.h" />
+    <ClInclude Include="src\game.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
