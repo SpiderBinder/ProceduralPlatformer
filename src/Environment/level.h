@@ -20,6 +20,7 @@ private:
 	sf::Texture textures[15];
 
 	std::vector<Room> rooms;
+	std::vector<Room> loadedRooms;
 
 public:
 	Level(std::string roomDirectory, std::string textureDirectory);
@@ -28,6 +29,7 @@ public:
 	void loadRooms();
 	void update(float dt);
 	void render(sf::RenderWindow& window);
+	sf::Vector2f collisionDetect(sf::FloatRect playerCollider);
 
 };
 

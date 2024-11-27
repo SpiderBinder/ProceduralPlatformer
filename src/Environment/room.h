@@ -10,6 +10,7 @@ class Room
 private:
 	// Identification
 	int id;
+	std::string roomType;
 	sf::Vector2i position;
 
 	// Memory
@@ -22,12 +23,17 @@ private:
 
 public:
 	int ID() { return id; }
+	std::array<std::array<int, size>, size> layout() { return tileArray; }
 	static const int Size = size;
 
-	Room(std::array<std::array<int, size>, size> tileArray);
+	Room();
+	Room(std::array<std::array<int, size>, size> tileArray, 
+		std::string roomType);
+	Room(std::array<std::array<int, size>, size> tileArray, 
+		std::string roomType, 
+		sf::Vector2i position);
 	void update(float dt);
 	void render(sf::RenderWindow& window, sf::Texture textures[15]);
-	bool collisionDetect(sf::IntRect playerRect);
 
 };
 

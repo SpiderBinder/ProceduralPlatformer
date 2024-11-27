@@ -22,6 +22,8 @@ Player::Player()
 	slide = false;
 
 	inputQueued = false;
+
+	animation = Idle;
 }
 
 Player::~Player()
@@ -35,34 +37,34 @@ bool Player::init()
 	bool success = true;
 
 	// Loading Player Textures
-	if (!idleTexture.loadFromFile("../Content/Sprites/Player/Idle.png")) {
+	if (!idleTexture.loadFromFile("Content/Sprites/Player/Idle.png")) {
 		std::cout << "Error - Player \'Idle.png\' failed to load" << std::endl;
 		success = false;
 	}
 
-	if (!runTexture.loadFromFile("../Content/Sprites/Player/Run.png")) {
+	if (!runTexture.loadFromFile("Content/Sprites/Player/Run.png")) {
 		std::cout << "Error - Player \'Run.png\' failed to load" << std::endl;
 		success = false;
 	}
-	if (!skidTexture.loadFromFile("../Content/Sprites/Player/Skid.png")) {
+	if (!skidTexture.loadFromFile("Content/Sprites/Player/Skid.png")) {
 		std::cout << "Error - Player \'Skid.png\' failed to load" << std::endl;
 		success = false;
 	}
 
-	if (!jumpIdleTexture.loadFromFile("../Content/Sprites/Player/JumpIdle.png")) {
+	if (!jumpIdleTexture.loadFromFile("Content/Sprites/Player/JumpIdle.png")) {
 		std::cout << "Error - Player \'JumpIdle.png\' failed to load" << std::endl;
 		success = false;
 	}
-	if (!jumpRunTexture.loadFromFile("../Content/Sprites/Player/JumpRun.png")) {
+	if (!jumpRunTexture.loadFromFile("Content/Sprites/Player/JumpRun.png")) {
 		std::cout << "Error - Player \'JumpRun.png\' failed to load" << std::endl;
 		success = false;
 	}
 
-	if (!crouchTexture.loadFromFile("../Content/Sprites/Player/Crouch.png")) {
+	if (!crouchTexture.loadFromFile("Content/Sprites/Player/Crouch.png")) {
 		std::cout << "Error - Player \'Crouch.png\' failed to load" << std::endl;
 		success = false;
 	}
-	if (!slideTexture.loadFromFile("../Content/Sprites/Player/Slide.png")) {
+	if (!slideTexture.loadFromFile("Content/Sprites/Player/Slide.png")) {
 		std::cout << "Error - Player \'Slide.png\' failed to load" << std::endl;
 		success = false;
 	}
@@ -160,6 +162,8 @@ void Player::update(float dt)
 	velocity += acceleration * dt;
 	position += velocity * dt;
 	sprite.setPosition(position);
+
+	grounded = false;
 }
 
 
@@ -215,7 +219,7 @@ void Player::render(sf::RenderWindow& window)
 }
 
 
-void Player::collision(sf::Vector2f newPosition, sf::Vector2f newVelocity, bool ground = false)
+void Player::collision(sf::Vector2f newPosition, sf::Vector2f newVelocity, bool ground)
 {
 	grounded = ground;
 	position = newPosition;
@@ -261,7 +265,6 @@ void Player::keyboardInput(sf::Event event)
 				velocity.y = -jumpSpeed * 4;
 			else
 				velocity.y = -jumpSpeed * 3;
-			grounded = false;
 		}
 		break;
 	// Crouching

@@ -39,7 +39,9 @@ void Level::generate()
 
 void Level::update(float dt)
 {
-	for (Room room : rooms)
+	// NOTE: Update 'loadedRooms' with rooms directly surrounding/containing player here
+
+	for (Room room : loadedRooms)
 	{
 		room.update(dt);
 	}
@@ -47,5 +49,17 @@ void Level::update(float dt)
 
 void Level::render(sf::RenderWindow& window)
 {
+	for (Room room : loadedRooms)
+	{
+		room.render(window, textures);
+	}
+}
 
+sf::Vector2f Level::collisionDetect(sf::FloatRect playerCollider)
+{
+	sf::Vector2f positionUpdate;
+
+
+
+	return positionUpdate;
 }

@@ -22,7 +22,6 @@ private:
 	float jumpSpeed;
 	float gravity;
 	float friction;
-	float airResistance;
 
 	bool grounded;
 

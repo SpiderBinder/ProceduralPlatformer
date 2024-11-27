@@ -22,7 +22,7 @@ bool Game::init()
 		return false;
 
 	// Text for displaying debug info
-	if (!debugFont.loadFromFile("../Content/Text/Fonts/Pixeled.ttf"))
+	if (!debugFont.loadFromFile("Content/Text/Fonts/Pixeled.ttf"))
 	{
 		std::cout << "Error - debugFont failed to load" << std::endl;
 		return false;
@@ -62,7 +62,7 @@ void Game::collisionDetect()
 	if (player.readPosition().y + player.readSize().y > floor)
 	{
 		sf::Vector2f newPosition(player.readPosition().x, floor - player.readSize().y);
-		player.collision(newPosition, player.readVelocity());
+		player.collision(newPosition, player.readVelocity(), true);
 	}
 }
 
