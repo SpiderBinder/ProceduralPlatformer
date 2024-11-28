@@ -161,7 +161,6 @@ void Player::update(float dt)
 	// Updating position from velocity
 	velocity += acceleration * dt;
 	position += velocity * dt;
-	sprite.setPosition(position);
 
 	grounded = false;
 }
@@ -169,6 +168,8 @@ void Player::update(float dt)
 
 void Player::render(sf::RenderWindow& window)
 {
+	sprite.setPosition(position);
+
 	// Basic 'animation'
 	switch (animation)
 	{

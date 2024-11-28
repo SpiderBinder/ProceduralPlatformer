@@ -29,7 +29,7 @@ public:
 	void loadRooms();
 	void update(float dt);
 	void render(sf::RenderWindow& window);
-	sf::Vector2f collisionDetect(sf::FloatRect playerCollider);
+	sf::Vector2f collisionDetect(sf::FloatRect collider, sf::FloatRect pastCollider);
 
 };
 

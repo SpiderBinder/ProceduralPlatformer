@@ -59,10 +59,11 @@ void Game::update(float dt)
 
 void Game::collisionDetect()
 {
-	if (player.readPosition().y + player.readSize().y > floor)
+	// NOTE: Replace with level.cpp collision plz
+	if (player.getPosition().y + player.getSize().y > floor)
 	{
-		sf::Vector2f newPosition(player.readPosition().x, floor - player.readSize().y);
-		player.collision(newPosition, player.readVelocity(), true);
+		sf::Vector2f newPosition(player.getPosition().x, floor - player.getSize().y);
+		player.collision(newPosition, player.getVelocity(), true);
 	}
 }
 
@@ -76,16 +77,16 @@ void Game::render()
 
 	// Player debug info
 	std::string position = "Position: " +
-		std::to_string(player.readPosition().x) + ' ' +
-		std::to_string(player.readPosition().y);
+		std::to_string(player.getPosition().x) + ' ' +
+		std::to_string(player.getPosition().y);
 
 	std::string velocity = "Velocity: " + 
-		std::to_string(player.readVelocity().x) + ' ' +
-		std::to_string(player.readVelocity().y);
+		std::to_string(player.getVelocity().x) + ' ' +
+		std::to_string(player.getVelocity().y);
 
 	std::string acceleration = "Acceleration: " +
-		std::to_string(player.readAcceleration().x) + ' ' +
-		std::to_string(player.readAcceleration().y);
+		std::to_string(player.getAcceleration().x) + ' ' +
+		std::to_string(player.getAcceleration().y);
 
 	debugText.setString(position);
 	debugText.setPosition(10, 10);

@@ -15,24 +15,23 @@ class Game
 private:
 	// Misc
 	sf::RenderWindow& window;
-	bool menu;
-	int frames;
-	sf::Clock frameCounter;
+	bool menu; // Gamestate boolean
+	int frames; // Elapsed frames since the last second
+	sf::Clock frameCounter; // Timer that resets every second to count frames
 
-	// Player
+	// Player character (singular instance of the 'Player' class)
 	Player player;
 
 	// Environment
-	float gravity;
-	float floor; // Temp for testing; Remove after implemented level and collision
+	float gravity; // Global gravity value
+	float floor; // NOTE: Temp for testing; Remove after implemented level and collision
 
 	// Fonts and Texts
-	sf::Font debugFont;
-	sf::Text debugText;
-	sf::Text frameText;
+	sf::Font debugFont; // Default font
+	sf::Text debugText; // Text used for debug info
+	sf::Text frameText; // Text used for frame rate display
 
 public:
-	// Constructor and basic game loop
 	Game(sf::RenderWindow& window);
 	~Game();
 	bool init();
@@ -41,11 +40,11 @@ public:
 	// Input Management
 	void keyboardEvent(sf::Event event);
 	void mouseEvent(sf::Event event);
-	// Physics
+	// Physics Engine
 	void collisionDetect();
 
 	// Public get-only varaibles
-	int readFrames() { return frames; }
+	int getFrames() { return frames; }
 };
 
 #endif // _PROCEDURALPLATFORMER_GAME_H_

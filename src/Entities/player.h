@@ -78,10 +78,12 @@ public:
 
 	void collision(sf::Vector2f newPosition, sf::Vector2f newVelocity, bool ground = false);
 
-	sf::Vector2f readPosition() { return position; }
-	sf::Vector2f readVelocity() { return velocity; }
-	sf::Vector2f readAcceleration() { return acceleration; }
-	sf::Vector2f readSize() { return size; }
+	// Public get-only methods
+	sf::Vector2f getPosition() { return position; }
+	sf::Vector2f getPastPosition() { return sprite.getPosition(); }
+	sf::Vector2f getVelocity() { return velocity; }
+	sf::Vector2f getAcceleration() { return acceleration; }
+	sf::Vector2f getSize() { return size; }
 };
 
 #endif // _PROCEDURALPLATFORMER_ENTITIES_PLAYER_H_

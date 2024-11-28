@@ -9,12 +9,12 @@ class Room
 {
 private:
 	// Identification
-	int id;
+	int id; // Unique room identification based off of position
 	std::string roomType;
-	sf::Vector2i position;
+	sf::Vector2f position;
 
 	// Memory
-	static const int size = 16; // Preset size of rooms
+	static const int size = 32; // Preset size of rooms
 	std::array<std::array<int, size>, size> tileArray;
 
 	// Rendering tiles
@@ -23,8 +23,10 @@ private:
 
 public:
 	int ID() { return id; }
-	std::array<std::array<int, size>, size> layout() { return tileArray; }
-	static const int Size = size;
+	sf::Vector2f getPosition() { return position; }
+	std::array<std::array<int, size>, size> getTileArray() { return tileArray; }
+	static const int getSize = size;
+	sf::Vector2f getTileSize() { return sprite.getGlobalBounds().getSize(); }
 
 	Room();
 	Room(std::array<std::array<int, size>, size> tileArray, 
@@ -34,6 +36,7 @@ public:
 		sf::Vector2i position);
 	void update(float dt);
 	void render(sf::RenderWindow& window, sf::Texture textures[15]);
+	bool withinTile(sf::Vector2f point);
 
 };
 
