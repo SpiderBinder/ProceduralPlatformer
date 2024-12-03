@@ -53,6 +53,7 @@ public:
 	void mouseEvent(sf::Event event);
 	// Physics Engine
 	void collisionDetect();
+	void collisionManagement(sf::FloatRect object1, sf::FloatRect object2);
 
 	// Public get-only varaibles
 	int getFrames() { return frames; }

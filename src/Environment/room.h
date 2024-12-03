@@ -8,12 +8,13 @@
 class Room
 {
 public: 
+	// TODO: Increase tile size and sprite size by a factor of 2
 	static const int Size = 16; // Preset size of rooms
 	static const int TileSize = 32; // Preset size of tiles
 
 private:
 	// Identification
-	int id; // Unique room identification based off of position
+	int id; // Unique room identification based off of global position
 	std::string roomType;
 	sf::Vector2f position;
 

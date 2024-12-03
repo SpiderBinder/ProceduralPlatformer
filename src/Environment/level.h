@@ -32,7 +32,8 @@ public:
 	bool init();
 	void update(float dt);
 	void render(sf::RenderWindow& window);
-	bool collisionDetect(sf::FloatRect collider);
+
+	std::vector<Room> collisionDetect(sf::Vector2f position, sf::Vector2f size);
 
 };
 

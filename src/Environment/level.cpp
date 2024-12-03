@@ -83,44 +83,21 @@ void Level::render(sf::RenderWindow& window)
 	}
 }
 
-bool Level::collisionDetect(sf::FloatRect collider)
+// Returns vector of rooms the collider is contained within
+std::vector<Room> Level::collisionDetect(sf::Vector2f position, sf::Vector2f size)
 {
-	//bool collision = false;
+	std::vector<Room> withinRooms;
 
-	// Cycles through all loaded rooms
 	for (Room room : loadedRooms)
 	{
-		//// Creats a temporary rect to check if the collider is within the room
-		//sf::FloatRect roomRect = sf::FloatRect(
-		//	room.getPosition(),
-		//	sf::Vector2f(room.getSize, room.getSize) * room.getTileSize().x);
-
-		//if (!roomRect.intersects(collider))
-		//	continue;
-
-		// Gets the tile array position of the top left collider corner
-		int startX = int(collider.getPosition().x - room.getPosition().x) / int(Room::TileSize);
-		int startY = int(collider.getPosition().y - room.getPosition().y) / int(Room::TileSize);
-		startX = startX < 0 ? 0 : startX;
-		startY = startY < 0 ? 0 : startY;
-		// Gets the tile array position of the bottom right collider corner
-		int endX = int(collider.getSize().x) / int(Room::TileSize) + startX;
-		int endY = int(collider.getSize().y) / int(Room::TileSize) + startY;
-		endX = endX > Room::Size ? Room::Size : endX;
-		endY = endY > Room::Size ? Room::Size : endY;
-
-		// Loops through all tiles intersecting the collider
-		for (int i = startX; i < endX; i++)
+		if (position.x < room.getPosition().x + Room::Size &&
+			position.x + size.x > room.getPosition().x &&
+			position.y < room.getPosition().y + Room::Size &&
+			position.y + size.y > room.getPosition().y)
 		{
-			for (int j = startY; j < endY; j++)
-			{
-				if (room.getTileArray()[i][j] != 0)
-				{
-					return true;
-				}
-			}
+			withinRooms.push_back(room);
 		}
 	}
 
-	return false;
+	return withinRooms;
 }

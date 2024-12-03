@@ -62,22 +62,40 @@ bool Game::init()
 
 void Game::update(float dt)
 {
-	player.update(dt);
-
-	levels[currentLevel].update(dt);
-
-	playerView.setCenter((player.getPosition() + (player.getSize() / 2.f)));
-
-	switch (currentViewType)
+	if (menu)
 	{
-	case ViewType::PlayerView:
-		currentView = playerView;
-		break;
-	case ViewType::DebugView:
-		currentView = debugView;
-		break;
-	default:
-		currentView = window.getDefaultView();
+
+	}
+	else
+	{
+		player.update(dt);
+
+		levels[currentLevel].update(dt);
+
+		// collisionDetect();
+
+
+		playerView.setCenter((player.getPosition() + (player.getSize() / 2.f)));
+
+		switch (currentViewType)
+		{
+		case ViewType::PlayerView:
+			currentView = playerView;
+			break;
+		case ViewType::DebugView:
+			currentView = debugView;
+			break;
+		default:
+			currentView = window.getDefaultView();
+		}
+
+		if (player.getPosition().y + player.getSize().y > 500.f)
+		{
+			player.collision(
+				sf::Vector2f(player.getPosition().x, 500.f - player.getSize().y),
+				sf::Vector2f(player.getVelocity().x, 0),
+				true);
+		}
 	}
 
 	frames++;
@@ -87,27 +105,48 @@ void Game::update(float dt)
 		frameText.setString(std::to_string(frames));
 		frames = 0;
 	}
-
-	collisionDetect();
 }
 
 void Game::collisionDetect()
 {
-	// TODO: Replace with Level collision and return player position to previous one if returns true
-	// Also clamp associated velocity for whatever direction they were going?
-	// NOTE: This is not a good way of doing collision physics, research into better methods!!!
+	std::vector<Room> rooms = levels[currentLevel].collisionDetect(player.getPosition(), player.getSize());
 
-	if (levels[currentLevel].collisionDetect(sf::FloatRect(player.getPosition(), player.getSize())))
+	for (Room room : rooms)
 	{
-		bool grounded = player.getPosition().y > player.getPastPosition().y;
-		player.collision(player.getPastPosition(), player.getVelocity(), grounded);
+		int startX = (int(player.getPosition().x) - int(room.getPosition().x)) / Room::TileSize;
+		int startY = (int(player.getPosition().y) - int(room.getPosition().y)) / Room::TileSize;
+		startX = startX > 0 ? startX : 0;
+		startY = startY > 0 ? startY : 0;
+
+		for (int i = startX; (i < startX + int(player.getSize().x / Room::TileSize)) && (i < Room::Size); i++)
+		{
+			for (int j = startY; (j < startY + int(player.getSize().y / Room::TileSize)) && (j < Room::Size); j++)
+			{
+
+				if (room.getTileArray()[i][j] != 0)
+				{
+					// NOTE: Many potential points of failure here
+					sf::FloatRect tileCollider = sf::FloatRect(
+						room.getPosition() + (sf::Vector2f(i, j) * float(Room::TileSize)),
+						sf::Vector2f(Room::TileSize, Room::TileSize));
+
+					collisionManagement(
+						sf::FloatRect(player.getPosition(), player.getSize()),
+						tileCollider);
+					
+					return;
+				}
+			}
+		}
 	}
+}
 
-	/*if (player.getPosition().y + player.getSize().y > floor)
-	{
-		sf::Vector2f newPosition(player.getPosition().x, floor - player.getSize().y);
-		player.collision(newPosition, player.getVelocity(), true);
-	}*/
+void Game::collisionManagement(sf::FloatRect object1, sf::FloatRect object2)
+{
+	// TODO: Find direction vector from object1 to object2
+	// TODO: Move object1 away from object2 (using previous direction vector) so that they are 'just touching'
+	// TODO: Find which axis (x or y) both objects majority align with (which sides are touching)
+	// TODO: Player position is pushed out of object2 using the axis found and the assosiated velocity axis is set to 0 (player is grounded if the touching side is the bottom one)
 }
 
 void Game::render()

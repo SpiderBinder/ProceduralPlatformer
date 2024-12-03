@@ -154,12 +154,10 @@ void Player::update(float dt)
 	}
 
 	// Calculating resistance
+	// TODO: Prevent this from applying (and set velocity to 0 instead) when velocity is <1
 	float totalFriction = friction * (grounded ? (slide ? 0.5 : 8) : 1);
 	float airResistance = velocity.x + (velocity.x >= 0 ? 30 : -30);
 	velocity.x -= dt * totalFriction * airResistance;
-	// Preventing constant velocity oscillation from resistance
-	/*if (abs(velocity.x) < 1 && acceleration.x == 0)
-		velocity.x = 0;*/
 
 	// Updating position from velocity
 	velocity += acceleration * dt;
