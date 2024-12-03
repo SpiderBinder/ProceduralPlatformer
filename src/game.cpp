@@ -18,14 +18,24 @@ Game::~Game()
 
 bool Game::init()
 {
+	bool success = true;
+
 	if (!player.init())
-		return false;
+		success = false;
+
+	levels.push_back(Level("Content/Levels/TestLevel/"));
+	for (Level level : levels)
+	{
+		if (!level.init())
+			success = false;
+	}
+
 
 	// Text for displaying debug info
 	if (!debugFont.loadFromFile("Content/Text/Fonts/Pixeled.ttf"))
 	{
 		std::cout << "Error - debugFont failed to load" << std::endl;
-		return false;
+		success = false;
 	}
 	debugText.setFont(debugFont);
 	debugText.setFillColor(sf::Color(10, 10, 10, 255));
@@ -40,7 +50,7 @@ bool Game::init()
 
 	frames = 0;
 
-	return true;
+	return success;
 }
 
 void Game::update(float dt)
@@ -59,7 +69,10 @@ void Game::update(float dt)
 
 void Game::collisionDetect()
 {
-	// NOTE: Replace with level.cpp collision plz
+	// TODO: Replace with Level collision and return player position to previous one if returns true
+	// Also clamp associated velocity for whatever direction they were going?
+	// NOTE: This may not be a very good way of doing collision physics, research into better methods
+
 	if (player.getPosition().y + player.getSize().y > floor)
 	{
 		sf::Vector2f newPosition(player.getPosition().x, floor - player.getSize().y);

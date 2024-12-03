@@ -2,10 +2,10 @@
 #include "level.h"
 
 
-Level::Level(std::string roomDirectory, std::string textureDirectory)
-	: roomDirectory(roomDirectory), textureDirectory(textureDirectory)
+Level::Level(std::string directory)
 {
-
+	roomDirectory = (directory + "RoomTypes/");
+	textureDirectory = (directory + "Textures/");
 }
 
 bool Level::init()
@@ -24,12 +24,18 @@ bool Level::init()
 		i++;
 	}
 
+	loadRooms();
+
 	return success;
 }
 
 void Level::loadRooms()
 {
-
+	// NOTE: Code to test functionality of std::filesystem
+	for (auto const& entry : std::filesystem::directory_iterator(roomDirectory))
+	{
+		std::cout << entry.path() << std::endl;
+	}
 }
 
 void Level::generate()
@@ -39,7 +45,10 @@ void Level::generate()
 
 void Level::update(float dt)
 {
-	// NOTE: Update 'loadedRooms' with rooms directly surrounding/containing player here
+	// TODO: Update 'loadedRooms' with rooms directly surrounding/containing player here
+
+	// NOTE: Temporary for testing purposes
+	loadedRooms = rooms;
 
 	for (Room room : loadedRooms)
 	{
@@ -55,10 +64,9 @@ void Level::render(sf::RenderWindow& window)
 	}
 }
 
-sf::Vector2f Level::collisionDetect(sf::FloatRect collider, sf::FloatRect pastCollider)
+bool Level::collisionDetect(sf::FloatRect collider)
 {
-	sf::Vector2f positionUpdate;
-	sf::Vector2i direction;
+	bool collision = false;
 
 	// Cycles through all loaded rooms
 	for (Room room : loadedRooms)
@@ -87,16 +95,13 @@ sf::Vector2f Level::collisionDetect(sf::FloatRect collider, sf::FloatRect pastCo
 		{
 			for (int j = startY; j < endY; j++)
 			{
-				if (room.getTileArray()[i][j] == 0)
-					continue;
-
-				direction.x += i == startX ? -1 : (i == endX ? 1 : 0);
-				direction.y += j == startY ? -1 : (j == endY ? 1 : 0);
+				if (room.getTileArray()[i][j] != 0)
+				{
+					collision = true;
+				}
 			}
 		}
 	}
 
-
-
-	return positionUpdate;
+	return collision;
 }

@@ -23,6 +23,8 @@ private:
 	Player player;
 
 	// Environment
+	std::vector<Level> levels;
+
 	float gravity; // Global gravity value
 	float floor; // NOTE: Temp for testing; Remove after implemented level and collision
 
