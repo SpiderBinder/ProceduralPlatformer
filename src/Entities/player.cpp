@@ -157,6 +157,9 @@ void Player::update(float dt)
 	float totalFriction = friction * (grounded ? (slide ? 0.5 : 8) : 1);
 	float airResistance = velocity.x + (velocity.x >= 0 ? 30 : -30);
 	velocity.x -= dt * totalFriction * airResistance;
+	// Preventing constant velocity oscillation from resistance
+	/*if (abs(velocity.x) < 1 && acceleration.x == 0)
+		velocity.x = 0;*/
 
 	// Updating position from velocity
 	velocity += acceleration * dt;
@@ -266,6 +269,9 @@ void Player::keyboardInput(sf::Event event)
 				velocity.y = -jumpSpeed * 4;
 			else
 				velocity.y = -jumpSpeed * 3;
+
+			if (slide)
+				velocity.x += velocity.x > 0 ? 100 : -100;
 		}
 		break;
 	// Crouching

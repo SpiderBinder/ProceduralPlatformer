@@ -9,6 +9,9 @@ Game::Game(sf::RenderWindow& game_window)
 	// For physics calculation
 	gravity = 5.f;
 	floor = 500.f; // NOTE: Temporary for testing
+
+	// Misc
+	frames = 0;
 }
 
 Game::~Game()
@@ -24,12 +27,15 @@ bool Game::init()
 		success = false;
 
 	levels.push_back(Level("Content/Levels/TestLevel/"));
-	for (Level level : levels)
+	for (Level& level : levels)
 	{
 		if (!level.init())
 			success = false;
 	}
 
+	playerView = window.getDefaultView();
+	debugView = window.getDefaultView();
+	currentViewType = ViewType::PlayerView;
 
 	// Text for displaying debug info
 	if (!debugFont.loadFromFile("Content/Text/Fonts/Pixeled.ttf"))
@@ -56,6 +62,26 @@ bool Game::init()
 void Game::update(float dt)
 {
 	player.update(dt);
+
+	for (Level& level : levels)
+	{
+		level.update(dt);
+	}
+
+	playerView.setCenter((player.getPosition() + (player.getSize() / 2.f)));
+
+	switch (currentViewType)
+	{
+	case ViewType::PlayerView:
+		currentView = playerView;
+		break;
+	case ViewType::DebugView:
+		currentView = debugView;
+		break;
+	default:
+		currentView = window.getDefaultView();
+	}
+
 	frames++;
 	if (frameCounter.getElapsedTime().asMilliseconds() > 1000)
 	{
@@ -82,36 +108,43 @@ void Game::collisionDetect()
 
 void Game::render()
 {
+	window.setView(currentView);
+
 	player.render(window);
 
+	for (Level& level : levels)
+	{
+		level.render(window);
+	}
+
+	sf::Vector2f viewCorner = currentView.getCenter() - (currentView.getSize() / 2.f);
 
 	// General debug info
-	// NOTE: Add frame rate display?
+	frameText.setPosition(viewCorner + sf::Vector2f(currentView.getSize().x - 40, 10));
+	window.draw(frameText);
 
 	// Player debug info
-	std::string position = "Position: " +
+	std::string positionDebug = "Position: " +
 		std::to_string(player.getPosition().x) + ' ' +
 		std::to_string(player.getPosition().y);
 
-	std::string velocity = "Velocity: " + 
+	std::string velocityDebug = "Velocity: " + 
 		std::to_string(player.getVelocity().x) + ' ' +
 		std::to_string(player.getVelocity().y);
 
-	std::string acceleration = "Acceleration: " +
+	std::string accelerationDebug = "Acceleration: " +
 		std::to_string(player.getAcceleration().x) + ' ' +
 		std::to_string(player.getAcceleration().y);
 
-	debugText.setString(position);
-	debugText.setPosition(10, 10);
+	debugText.setString(positionDebug);
+	debugText.setPosition(viewCorner + sf::Vector2f(10, 10));
 	window.draw(debugText);
-	debugText.setString(velocity);
-	debugText.setPosition(10, 25);
+	debugText.setString(velocityDebug);
+	debugText.setPosition(viewCorner + sf::Vector2f(10, 25));
 	window.draw(debugText);
-	debugText.setString(acceleration);
-	debugText.setPosition(10, 40);
+	debugText.setString(accelerationDebug);
+	debugText.setPosition(viewCorner + sf::Vector2f(10, 40));
 	window.draw(debugText);
-
-	window.draw(frameText);
 }
 
 void Game::keyboardEvent(sf::Event event)

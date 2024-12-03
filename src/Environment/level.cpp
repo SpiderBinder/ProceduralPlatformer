@@ -12,6 +12,10 @@ bool Level::init()
 {
 	bool success = true;
 
+	// NOTE: Temporary for testing? (only the second one)
+	textureNames[0] = "defTile.png";
+	textureNames[1] = "defTile.png";
+
 	int i = 0;
 	for (sf::Texture &texture : textures)
 	{
@@ -27,6 +31,19 @@ bool Level::init()
 	// NOTE: Temporarily unused as file reading and generation not implemented
 	// loadRooms();
 	// generate(int seed);
+
+	// NOTE: tempArray and the manual addition of a room is temporary for testing
+	std::array<std::array<int, Room::getSize>, Room::getSize> tempArray;
+	tempArray[0].fill(1);
+	tempArray[Room::getSize - 1].fill(1);
+	for (int i = 1; i < Room::getSize - 1; i++)
+	{
+		tempArray[i].fill(0);
+		tempArray[i][0] = 1;
+		tempArray[i][Room::getSize - 1] = 1;
+	}
+
+	rooms.push_back(Room(tempArray, "tempType", sf::Vector2f(0.f, 0.f)));
 
 	return success;
 }
@@ -68,7 +85,7 @@ void Level::render(sf::RenderWindow& window)
 
 bool Level::collisionDetect(sf::FloatRect collider)
 {
-	bool collision = false;
+	//bool collision = false;
 
 	// Cycles through all loaded rooms
 	for (Room room : loadedRooms)
@@ -99,11 +116,11 @@ bool Level::collisionDetect(sf::FloatRect collider)
 			{
 				if (room.getTileArray()[i][j] != 0)
 				{
-					collision = true;
+					return true;
 				}
 			}
 		}
 	}
 
-	return collision;
+	return false;
 }

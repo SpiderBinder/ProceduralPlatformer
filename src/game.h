@@ -14,10 +14,18 @@ class Game
 {
 private:
 	// Misc
-	sf::RenderWindow& window;
 	bool menu; // Gamestate boolean
 	int frames; // Elapsed frames since the last second
 	sf::Clock frameCounter; // Timer that resets every second to count frames
+
+	// Rendering
+	sf::RenderWindow& window;
+
+	sf::View currentView;
+	enum ViewType { PlayerView, DebugView };
+	ViewType currentViewType;
+	sf::View playerView;
+	sf::View debugView;
 
 	// Player character (singular instance of the 'Player' class)
 	Player player;

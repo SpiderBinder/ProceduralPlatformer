@@ -18,10 +18,10 @@ Room::Room(std::array<std::array<int, size>, size> tileArray, std::string roomTy
 	id = 0;
 }
 
-Room::Room(std::array<std::array<int, size>, size> tileArray, std::string roomType, sf::Vector2i position)
+Room::Room(std::array<std::array<int, size>, size> tileArray, std::string roomType, sf::Vector2f position)
 	: tileArray(tileArray), roomType(roomType), position(position)
 {
-	id = position.x * 10000 + position.y;
+	// TODO: Make system for creating unique id from float position of room
 }
 
 void Room::update(float dt)
@@ -41,9 +41,9 @@ void Room::render(sf::RenderWindow& window, std::array<sf::Texture, 15> textures
 			sprite.setTexture(textures[tileArray[i][j]]);
 			window.draw(sprite);
 
-			tempVector.y += sprite.getGlobalBounds().height;
+			tempVector.x += sprite.getGlobalBounds().height;
 		}
-		tempVector.x += sprite.getGlobalBounds().width;
+		tempVector.y += sprite.getGlobalBounds().width;
 	}
 }
 

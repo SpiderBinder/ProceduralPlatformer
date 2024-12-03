@@ -14,7 +14,7 @@ private:
 	sf::Vector2f position;
 
 	// Memory
-	static const int size = 32; // Preset size of rooms
+	static const int size = 8; // Preset size of rooms
 	std::array<std::array<int, size>, size> tileArray;
 
 	// Rendering tiles
@@ -32,7 +32,7 @@ public:
 		std::string roomType);
 	Room(std::array<std::array<int, size>, size> tileArray, 
 		std::string roomType, 
-		sf::Vector2i position);
+		sf::Vector2f position);
 	void update(float dt);
 	void render(sf::RenderWindow& window, std::array<sf::Texture, 15> textures);
 	bool withinTile(sf::Vector2f point);
