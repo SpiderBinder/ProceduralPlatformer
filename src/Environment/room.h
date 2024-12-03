@@ -14,7 +14,7 @@ private:
 	sf::Vector2f position;
 
 	// Memory
-	static const int size = 8; // Preset size of rooms
+	static const int size = 16; // Preset size of rooms
 	std::array<std::array<int, size>, size> tileArray;
 
 	// Rendering tiles

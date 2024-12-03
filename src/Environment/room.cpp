@@ -31,7 +31,7 @@ void Room::update(float dt)
 
 void Room::render(sf::RenderWindow& window, std::array<sf::Texture, 15> textures)
 {
-	sf::Vector2f tempVector = sf::Vector2f(position);
+	sf::Vector2f tempVector = position;
 
 	for (int i = 0; i < size; i++)
 	{
@@ -39,11 +39,13 @@ void Room::render(sf::RenderWindow& window, std::array<sf::Texture, 15> textures
 		{
 			sprite.setPosition(tempVector);
 			sprite.setTexture(textures[tileArray[i][j]]);
-			window.draw(sprite);
+			if (tileArray[i][j] != 0 )
+				window.draw(sprite);
 
-			tempVector.x += sprite.getGlobalBounds().height;
+			tempVector.y += sprite.getGlobalBounds().height;
 		}
-		tempVector.y += sprite.getGlobalBounds().width;
+		tempVector.x += sprite.getGlobalBounds().width;
+		tempVector.y = position.y;
 	}
 }
 
