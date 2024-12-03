@@ -33,14 +33,14 @@ bool Level::init()
 	// generate(int seed);
 
 	// NOTE: tempArray and the manual addition of a room is temporary for testing
-	std::array<std::array<int, Room::getSize>, Room::getSize> tempArray;
+	std::array<std::array<int, Room::Size>, Room::Size> tempArray;
 	tempArray[0].fill(1);
-	tempArray[Room::getSize - 1].fill(1);
-	for (int i = 1; i < Room::getSize - 1; i++)
+	tempArray[Room::Size - 1].fill(1);
+	for (int i = 1; i < Room::Size - 1; i++)
 	{
 		tempArray[i].fill(0);
 		tempArray[i][0] = 1;
-		tempArray[i][Room::getSize - 1] = 1;
+		tempArray[i][Room::Size - 1] = 1;
 	}
 
 	rooms.push_back(Room(tempArray, "tempType", sf::Vector2f(0.f, 0.f)));
@@ -90,24 +90,24 @@ bool Level::collisionDetect(sf::FloatRect collider)
 	// Cycles through all loaded rooms
 	for (Room room : loadedRooms)
 	{
-		// Creats a temporary rect to check if the collider is within the room
-		sf::FloatRect roomRect = sf::FloatRect(
-			room.getPosition(),
-			sf::Vector2f(room.getSize, room.getSize) * room.getTileSize().x);
+		//// Creats a temporary rect to check if the collider is within the room
+		//sf::FloatRect roomRect = sf::FloatRect(
+		//	room.getPosition(),
+		//	sf::Vector2f(room.getSize, room.getSize) * room.getTileSize().x);
 
-		if (!roomRect.intersects(collider))
-			continue;
+		//if (!roomRect.intersects(collider))
+		//	continue;
 
 		// Gets the tile array position of the top left collider corner
-		int startX = int(collider.getPosition().x - room.getPosition().x) / int(room.getTileSize().x);
-		int startY = int(collider.getPosition().y - room.getPosition().y) / int(room.getTileSize().y);
+		int startX = int(collider.getPosition().x - room.getPosition().x) / int(Room::TileSize);
+		int startY = int(collider.getPosition().y - room.getPosition().y) / int(Room::TileSize);
 		startX = startX < 0 ? 0 : startX;
 		startY = startY < 0 ? 0 : startY;
 		// Gets the tile array position of the bottom right collider corner
-		int endX = int(collider.getSize().x) / int(room.getTileSize().x) + startX;
-		int endY = int(collider.getSize().y) / int(room.getTileSize().y) + startY;
-		endX = endX > room.getSize ? room.getSize : endX;
-		endY = endY > room.getSize ? room.getSize : endY;
+		int endX = int(collider.getSize().x) / int(Room::TileSize) + startX;
+		int endY = int(collider.getSize().y) / int(Room::TileSize) + startY;
+		endX = endX > Room::Size ? Room::Size : endX;
+		endY = endY > Room::Size ? Room::Size : endY;
 
 		// Loops through all tiles intersecting the collider
 		for (int i = startX; i < endX; i++)

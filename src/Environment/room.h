@@ -7,15 +7,17 @@
 
 class Room
 {
+public: 
+	static const int Size = 16; // Preset size of rooms
+	static const int TileSize = 32; // Preset size of tiles
+
 private:
 	// Identification
 	int id; // Unique room identification based off of position
 	std::string roomType;
 	sf::Vector2f position;
 
-	// Memory
-	static const int size = 16; // Preset size of rooms
-	std::array<std::array<int, size>, size> tileArray;
+	std::array<std::array<int, Size>, Size> tileArray;
 
 	// Rendering tiles
 	sf::Sprite sprite;
@@ -23,14 +25,12 @@ private:
 public:
 	int ID() { return id; }
 	sf::Vector2f getPosition() { return position; }
-	std::array<std::array<int, size>, size> getTileArray() { return tileArray; }
-	static const int getSize = size;
-	sf::Vector2f getTileSize() { return sprite.getGlobalBounds().getSize(); }
+	std::array<std::array<int, Size>, Size> getTileArray() { return tileArray; }
 
 	Room();
-	Room(std::array<std::array<int, size>, size> tileArray, 
+	Room(std::array<std::array<int, Size>, Size> tileArray, 
 		std::string roomType);
-	Room(std::array<std::array<int, size>, size> tileArray, 
+	Room(std::array<std::array<int, Size>, Size> tileArray, 
 		std::string roomType, 
 		sf::Vector2f position);
 	void update(float dt);

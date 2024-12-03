@@ -11,6 +11,7 @@ Game::Game(sf::RenderWindow& game_window)
 	floor = 500.f; // NOTE: Temporary for testing
 
 	// Misc
+	currentLevel = 0;
 	frames = 0;
 }
 
@@ -63,10 +64,7 @@ void Game::update(float dt)
 {
 	player.update(dt);
 
-	for (Level& level : levels)
-	{
-		level.update(dt);
-	}
+	levels[currentLevel].update(dt);
 
 	playerView.setCenter((player.getPosition() + (player.getSize() / 2.f)));
 
@@ -97,13 +95,19 @@ void Game::collisionDetect()
 {
 	// TODO: Replace with Level collision and return player position to previous one if returns true
 	// Also clamp associated velocity for whatever direction they were going?
-	// NOTE: This may not be a very good way of doing collision physics, research into better methods
+	// NOTE: This is not a good way of doing collision physics, research into better methods!!!
 
-	if (player.getPosition().y + player.getSize().y > floor)
+	if (levels[currentLevel].collisionDetect(sf::FloatRect(player.getPosition(), player.getSize())))
+	{
+		bool grounded = player.getPosition().y > player.getPastPosition().y;
+		player.collision(player.getPastPosition(), player.getVelocity(), grounded);
+	}
+
+	/*if (player.getPosition().y + player.getSize().y > floor)
 	{
 		sf::Vector2f newPosition(player.getPosition().x, floor - player.getSize().y);
 		player.collision(newPosition, player.getVelocity(), true);
-	}
+	}*/
 }
 
 void Game::render()
@@ -112,10 +116,7 @@ void Game::render()
 
 	player.render(window);
 
-	for (Level& level : levels)
-	{
-		level.render(window);
-	}
+	levels[currentLevel].render(window);
 
 	sf::Vector2f viewCorner = currentView.getCenter() - (currentView.getSize() / 2.f);
 

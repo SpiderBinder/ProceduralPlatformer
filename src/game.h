@@ -31,6 +31,7 @@ private:
 	Player player;
 
 	// Environment
+	int currentLevel;
 	std::vector<Level> levels;
 
 	float gravity; // Global gravity value
