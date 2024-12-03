@@ -19,7 +19,6 @@ private:
 
 	// Rendering tiles
 	sf::Sprite sprite;
-	sf::Texture textures[15];
 
 public:
 	int ID() { return id; }
@@ -35,7 +34,7 @@ public:
 		std::string roomType, 
 		sf::Vector2i position);
 	void update(float dt);
-	void render(sf::RenderWindow& window, sf::Texture textures[15]);
+	void render(sf::RenderWindow& window, std::array<sf::Texture, 15> textures);
 	bool withinTile(sf::Vector2f point);
 
 };

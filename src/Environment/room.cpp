@@ -29,7 +29,7 @@ void Room::update(float dt)
 
 }
 
-void Room::render(sf::RenderWindow& window, sf::Texture textures[15])
+void Room::render(sf::RenderWindow& window, std::array<sf::Texture, 15> textures)
 {
 	sf::Vector2f tempVector = sf::Vector2f(position);
 

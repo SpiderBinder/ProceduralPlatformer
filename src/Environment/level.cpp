@@ -24,7 +24,9 @@ bool Level::init()
 		i++;
 	}
 
-	loadRooms();
+	// NOTE: Temporarily unused as file reading and generation not implemented
+	// loadRooms();
+	// generate(int seed);
 
 	return success;
 }
