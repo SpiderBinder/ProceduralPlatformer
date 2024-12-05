@@ -87,6 +87,7 @@ public:
 
 	sf::Vector2f getVelocity() { return velocity; }
 	sf::Vector2f getAcceleration() { return acceleration; }
+	bool getGrounded() { return grounded; }
 
 	sf::Vector2f getSize() { return size; }
 	sf::Vector2f getBaseSize() { return baseSize; }

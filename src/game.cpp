@@ -119,6 +119,8 @@ void Game::collisionDetect()
 
 	for (Room room : rooms)
 	{
+		std::vector<sf::FloatRect> tileColliders;
+
 		int startX = (int(player.getPosition().x) - int(room.getPosition().x)) / Room::TileSize;
 		int startY = (int(player.getPosition().y) - int(room.getPosition().y)) / Room::TileSize;
 		startX = startX > 0 ? startX : 0;
@@ -137,16 +139,37 @@ void Game::collisionDetect()
 
 					if (sf::FloatRect(player.getPosition(), player.getSize()).intersects(tileCollider))
 					{
-						collisionManagement(
-							sf::FloatRect(player.getPosition(), player.getSize()),
-							tileCollider,
-							player.getVelocity());
-
-						return;
+						tileColliders.push_back(tileCollider);
 					}
 				}
 			}
 		}
+
+		float distance = 100000;
+		int identifier = -1;
+		sf::Vector2f playerCentre = player.getPosition() + (player.getSize() / 2.f);
+		for (int i = 0; i < tileColliders.size(); i++)
+		{
+			sf::Vector2f tileCentre = tileColliders.at(i).getPosition() + (tileColliders.at(i).getSize() / 2.f);
+			sf::Vector2f direction = playerCentre - tileCentre;
+			float magnitude = sqrt(pow(direction.x, 2.f) + pow(direction.y, 2.f));
+			if (magnitude < distance)
+			{
+				identifier = i;
+				distance = magnitude;
+			}
+		}
+		if (identifier == -1)
+		{
+			return;
+		}
+
+		collisionManagement(
+			sf::FloatRect(player.getPosition(), player.getSize()),
+			tileColliders.at(identifier),
+			player.getVelocity());
+
+		return;
 	}
 }
 
@@ -198,7 +221,7 @@ void Game::collisionManagement(sf::FloatRect object1, sf::FloatRect object2, sf:
 
 		// NOTE: BIG point of potential failure here
 		// Checks which side of corner2 the direction 'passes through'
-		float differenceX = (direction.x / direction.y) * (corner2.y + direction.y - corner1.y);
+		float differenceX = (direction.x / direction.y) * (corner2.y - corner1.y);
 		bool right = corner1.x + differenceX > corner2.x;
 		
 		if (cornerDirection.x > 0)
@@ -209,7 +232,6 @@ void Game::collisionManagement(sf::FloatRect object1, sf::FloatRect object2, sf:
 
 	switch (side)
 	{
-	default:
 	case 0:
 		newPosition.y = object2.getPosition().y - object1.getSize().y;
 		newVelocity.y = 0;
@@ -228,7 +250,8 @@ void Game::collisionManagement(sf::FloatRect object1, sf::FloatRect object2, sf:
 		break;
 	}
 
-	player.collision(newPosition, newVelocity, side == 0);
+	player.collision(newPosition, newVelocity, player.getGrounded() ? true : side == 0);
+	collisionDetect();
 
 	return;
 }

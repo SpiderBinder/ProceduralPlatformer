@@ -31,6 +31,8 @@ void Room::update(float dt)
 
 void Room::render(sf::RenderWindow& window, std::vector<sf::Texture> textures)
 {
+	sprite.setScale(2, 2);
+
 	sf::Vector2f tempVector = position;
 
 	for (int i = 0; i < Size; i++)

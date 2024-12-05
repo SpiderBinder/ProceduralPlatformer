@@ -70,7 +70,7 @@ bool Player::init()
 	}
 
 	sprite.setTexture(idleTexture);
-	sprite.setPosition(100.f, 100.f);
+	sprite.setPosition(position);
 	sprite.setScale(2.f, 2.f);
 
 	size.x = sprite.getGlobalBounds().width;
@@ -155,9 +155,16 @@ void Player::update(float dt)
 
 	// Calculating resistance
 	// TODO: Prevent this from applying (and set velocity to 0 instead) when velocity is <1
-	float totalFriction = friction * (grounded ? (slide ? 0.5 : 8) : 1);
-	float airResistance = velocity.x + (velocity.x >= 0 ? 30 : -30);
-	velocity.x -= dt * totalFriction * airResistance;
+	if (abs(velocity.x) > 1)
+	{
+		float totalFriction = friction * (grounded ? (slide ? 0.5 : 8) : 1);
+		float airResistance = velocity.x + (velocity.x >= 0 ? 30 : -30);
+		velocity.x -= dt * totalFriction * airResistance;
+	}
+	else
+	{
+		velocity.x = 0;
+	}
 
 	// Updating position from velocity
 	velocity += acceleration * dt;
