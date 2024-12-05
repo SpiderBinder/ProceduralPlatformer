@@ -15,6 +15,8 @@ private:
 	sf::Vector2f velocity;
 	sf::Vector2f acceleration;
 	sf::Vector2f size;
+
+	sf::Vector2f basePosition;
 	sf::Vector2f baseSize;
 
 	float runAcceleration;
@@ -81,9 +83,13 @@ public:
 	// Public get-only methods
 	sf::Vector2f getPosition() { return position; }
 	sf::Vector2f getPastPosition() { return sprite.getPosition(); }
+	sf::Vector2f getBasePosition() { return basePosition; }
+
 	sf::Vector2f getVelocity() { return velocity; }
 	sf::Vector2f getAcceleration() { return acceleration; }
+
 	sf::Vector2f getSize() { return size; }
+	sf::Vector2f getBaseSize() { return baseSize; }
 };
 
 #endif // _PROCEDURALPLATFORMER_ENTITIES_PLAYER_H_

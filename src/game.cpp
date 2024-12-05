@@ -68,14 +68,16 @@ void Game::update(float dt)
 	}
 	else
 	{
+		dt = dt > 0.1 ? 0.1 : dt;
+
 		player.update(dt);
 
 		levels[currentLevel].update(dt);
 
-		// collisionDetect();
+		collisionDetect();
 
 
-		playerView.setCenter((player.getPosition() + (player.getSize() / 2.f)));
+		playerView.setCenter((player.getBasePosition() + (player.getBaseSize() / 2.f)));
 
 		switch (currentViewType)
 		{
@@ -89,13 +91,13 @@ void Game::update(float dt)
 			currentView = window.getDefaultView();
 		}
 
-		if (player.getPosition().y + player.getSize().y > 500.f)
+		/*if (player.getPosition().y + player.getSize().y > 500.f)
 		{
 			player.collision(
 				sf::Vector2f(player.getPosition().x, 500.f - player.getSize().y),
 				sf::Vector2f(player.getVelocity().x, 0),
 				true);
-		}
+		}*/
 	}
 
 	frames++;
@@ -107,6 +109,10 @@ void Game::update(float dt)
 	}
 }
 
+// TODO: Fix horizontal collision
+// TODO: In the future, checking for travelling clean-through a collider would be nice
+// TODO: Add check for attempting to uncrouch to see if it would cause a collision when wouldn't otherwise and lock uncrouching
+// NOTE: For this (^) you could uncouple collisionManagement from collisionDetect and have collisionDetect return the tile's collider (default rect if no collision) instead?
 void Game::collisionDetect()
 {
 	std::vector<Room> rooms = levels[currentLevel].collisionDetect(player.getPosition(), player.getSize());
@@ -118,35 +124,113 @@ void Game::collisionDetect()
 		startX = startX > 0 ? startX : 0;
 		startY = startY > 0 ? startY : 0;
 
-		for (int i = startX; (i < startX + int(player.getSize().x / Room::TileSize)) && (i < Room::Size); i++)
+		for (int i = startX; (i < startX + int(player.getSize().x / Room::TileSize) + 1) && (i < Room::Size); i++)
 		{
-			for (int j = startY; (j < startY + int(player.getSize().y / Room::TileSize)) && (j < Room::Size); j++)
+			for (int j = startY; (j < startY + int(player.getSize().y / Room::TileSize) + 1) && (j < Room::Size); j++)
 			{
 
 				if (room.getTileArray()[i][j] != 0)
 				{
-					// NOTE: Many potential points of failure here
 					sf::FloatRect tileCollider = sf::FloatRect(
 						room.getPosition() + (sf::Vector2f(i, j) * float(Room::TileSize)),
 						sf::Vector2f(Room::TileSize, Room::TileSize));
 
-					collisionManagement(
-						sf::FloatRect(player.getPosition(), player.getSize()),
-						tileCollider);
-					
-					return;
+					if (sf::FloatRect(player.getPosition(), player.getSize()).intersects(tileCollider))
+					{
+						collisionManagement(
+							sf::FloatRect(player.getPosition(), player.getSize()),
+							tileCollider,
+							player.getVelocity());
+
+						return;
+					}
 				}
 			}
 		}
 	}
 }
 
-void Game::collisionManagement(sf::FloatRect object1, sf::FloatRect object2)
+// NOTE: object1 is currently specifically the player (change?)
+// Manages collision between a moving entity (object1) and a static one (object2)
+void Game::collisionManagement(sf::FloatRect object1, sf::FloatRect object2, sf::Vector2f direction)
 {
-	// TODO: Find direction vector from object1 to object2
-	// TODO: Move object1 away from object2 (using previous direction vector) so that they are 'just touching'
-	// TODO: Find which axis (x or y) both objects majority align with (which sides are touching)
-	// TODO: Player position is pushed out of object2 using the axis found and the assosiated velocity axis is set to 0 (player is grounded if the touching side is the bottom one)
+	sf::Vector2f newPosition = object1.getPosition();
+	sf::Vector2f newVelocity = direction;
+	int side;
+
+	if (direction.y == 0 || direction.x == 0)
+	{
+		if (direction.y == 0)
+			side = direction.x > 0 ? 3 : 1;
+		else if (direction.x == 0)
+			side = direction.y > 0 ? 0 : 2;
+		else
+			side = 0;
+	}
+	else
+	{
+		sf::Vector2f corner1 = object1.getPosition();
+		sf::Vector2f corner2 = object2.getPosition();
+		sf::Vector2i cornerDirection;
+
+		// Finds if corner1 should be of the right two or left two (opposite for corner2)
+		if (direction.x > 0)
+		{
+			corner1.x += object1.getSize().x;
+			cornerDirection.x = -1;
+		}
+		else
+		{
+			corner2.x += object2.getSize().x;
+			cornerDirection.x = 1;
+		}
+		// Finds if corner1 should be of the bottom two or top two (opposite for corner2)
+		if (direction.y > 0)
+		{
+			corner1.y += object1.getSize().y;
+			cornerDirection.y = -1;
+		}
+		else
+		{
+			corner2.y += object2.getSize().y;
+			cornerDirection.y = 1;
+		}
+
+		// NOTE: BIG point of potential failure here
+		// Checks which side of corner2 the direction 'passes through'
+		float differenceX = (direction.x / direction.y) * (corner2.y + direction.y - corner1.y);
+		bool right = corner1.x + differenceX > corner2.x;
+		
+		if (cornerDirection.x > 0)
+			side = right ? 1 : (cornerDirection.y > 0 ? 2 : 0);
+		else
+			side = right ? (cornerDirection.y > 0 ? 2 : 0) : 3;
+	}
+
+	switch (side)
+	{
+	default:
+	case 0:
+		newPosition.y = object2.getPosition().y - object1.getSize().y;
+		newVelocity.y = 0;
+		break;
+	case 1:
+		newPosition.x = object2.getPosition().x + object2.getSize().x;
+		newVelocity.x = 0;
+		break;
+	case 2:
+		newPosition.y = object2.getPosition().y + object2.getSize().y;
+		newVelocity.y = 0;
+		break;
+	case 3:
+		newPosition.x = object2.getPosition().x - object1.getSize().x;
+		newVelocity.x = 0;
+		break;
+	}
+
+	player.collision(newPosition, newVelocity, side == 0);
+
+	return;
 }
 
 void Game::render()

@@ -12,20 +12,18 @@ bool Level::init()
 {
 	bool success = true;
 
-	// NOTE: Temporary for testing? (only the second one)
-	textureNames[0] = "defTile.png";
-	textureNames[1] = "defTile.png";
+	// NOTE: Temporary for testing, will be replaced with reading all textures from files
+	textureNames.push_back("defTile.png");
+	textureNames.push_back("defTile.png");
 
-	int i = 0;
-	for (sf::Texture &texture : textures)
+	for (int i = 0; i < textureNames.size(); i++)
 	{
-		if (textureNames[i] == "") { break; }
-		if (!texture.loadFromFile(textureDirectory + textureNames[i]))
+		textures.push_back(sf::Texture());
+		if (!textures[i].loadFromFile(textureDirectory + textureNames[i]))
 		{
 			std::cout << textureNames[i] << " failed to load" << std::endl;
 			success = false;
 		}
-		i++;
 	}
 
 	// NOTE: Temporarily unused as file reading and generation not implemented
@@ -83,6 +81,18 @@ void Level::render(sf::RenderWindow& window)
 	}
 }
 
+
+// Returns the collider rectangle of the requested tile type
+sf::FloatRect Level::getTileCollider(int tileType)
+{
+	if (tileType <= 0 || tileType > textures.size())
+	{
+		return sf::FloatRect();
+	}
+	// TODO: Make this change based on tile type (Level object will contain list of rects)
+	return sf::FloatRect(0, 0, Room::TileSize, Room::TileSize);
+}
+
 // Returns vector of rooms the collider is contained within
 std::vector<Room> Level::collisionDetect(sf::Vector2f position, sf::Vector2f size)
 {
@@ -90,14 +100,17 @@ std::vector<Room> Level::collisionDetect(sf::Vector2f position, sf::Vector2f siz
 
 	for (Room room : loadedRooms)
 	{
-		if (position.x < room.getPosition().x + Room::Size &&
+		if (position.x < room.getPosition().x + (Room::Size * Room::TileSize) &&
 			position.x + size.x > room.getPosition().x &&
-			position.y < room.getPosition().y + Room::Size &&
+			position.y < room.getPosition().y + (Room::Size * Room::TileSize) &&
 			position.y + size.y > room.getPosition().y)
 		{
 			withinRooms.push_back(room);
 		}
 	}
+
+	// NOTE: Temporary for testing
+	return loadedRooms;
 
 	return withinRooms;
 }

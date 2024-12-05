@@ -18,8 +18,8 @@ private:
 	std::vector<Room> roomPresets;
 
 	std::string textureDirectory;
-	std::array<std::string, 15> textureNames;
-	std::array<sf::Texture, 15> textures;
+	std::vector<std::string> textureNames;
+	std::vector<sf::Texture> textures;
 
 	std::vector<Room> rooms;
 	std::vector<Room> loadedRooms;
@@ -33,6 +33,7 @@ public:
 	void update(float dt);
 	void render(sf::RenderWindow& window);
 
+	sf::FloatRect getTileCollider(int tileType);
 	std::vector<Room> collisionDetect(sf::Vector2f position, sf::Vector2f size);
 
 };

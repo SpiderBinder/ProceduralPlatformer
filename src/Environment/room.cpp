@@ -29,7 +29,7 @@ void Room::update(float dt)
 
 }
 
-void Room::render(sf::RenderWindow& window, std::array<sf::Texture, 15> textures)
+void Room::render(sf::RenderWindow& window, std::vector<sf::Texture> textures)
 {
 	sf::Vector2f tempVector = position;
 
@@ -37,10 +37,22 @@ void Room::render(sf::RenderWindow& window, std::array<sf::Texture, 15> textures
 	{
 		for (int j = 0; j < Size; j++)
 		{
-			sprite.setPosition(tempVector);
-			sprite.setTexture(textures[tileArray[i][j]]);
-			if (tileArray[i][j] != 0 )
-				window.draw(sprite);
+			// Checks if there is a texture provided for the tileType of the currently drawn tile
+			if (tileArray[i][j] < textures.size())
+			{
+				// Checks if the tileType is 'Empty'/default (0)
+				if (tileArray[i][j] != 0)
+				{
+					sprite.setPosition(tempVector);
+					sprite.setTexture(textures[tileArray[i][j]]);
+					window.draw(sprite);
+				}
+			}
+			else
+			{
+				std::cout << "Error - No texture found for tileType" << std::endl;
+				continue;
+			}
 
 			tempVector.y += sprite.getGlobalBounds().height;
 		}

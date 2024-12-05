@@ -163,6 +163,8 @@ void Player::update(float dt)
 	velocity += acceleration * dt;
 	position += velocity * dt;
 
+	basePosition = sf::Vector2f(position.x, (position.y + size.y) - baseSize.y);
+
 	grounded = false;
 }
 
