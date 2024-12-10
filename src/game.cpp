@@ -305,6 +305,7 @@ void Game::keyboardEvent(sf::Event event)
 	if (!menu)
 	{
 		player.keyboardInput(event);
+		
 	}
 	else
 	{

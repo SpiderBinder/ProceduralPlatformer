@@ -27,30 +27,66 @@ bool Level::init()
 	}
 
 	// NOTE: Temporarily unused as file reading and generation not implemented
-	// loadRooms();
+	loadRooms();
 	// generate(int seed);
 
 	// NOTE: tempArray and the manual addition of a room is temporary for testing
-	std::array<std::array<int, Room::Size>, Room::Size> tempArray;
-	tempArray[0].fill(1);
-	tempArray[Room::Size - 1].fill(1);
-	for (int i = 1; i < Room::Size - 1; i++)
-	{
-		tempArray[i].fill(0);
-		tempArray[i][0] = 1;
-		tempArray[i][Room::Size - 1] = 1;
-	}
 
-	rooms.push_back(Room(tempArray, "tempType", sf::Vector2f(0.f, 0.f)));
+	rooms.push_back(Room(roomPresets.at(0), sf::Vector2f(0, 0)));
 
 	return success;
 }
 
 void Level::loadRooms()
 {
-	// NOTE: Code to test functionality of std::filesystem
 	for (auto const& entry : std::filesystem::directory_iterator(roomDirectory))
 	{
+		// Reading contents of file
+		std::vector<std::string> contents;
+		std::string tempString;
+		std::ifstream readFile(entry.path());
+
+		while (std::getline(readFile, tempString, ';'))
+		{
+			contents.push_back(tempString);
+		}
+
+		// Assigning contents of file to a room object
+		std::string name;
+		std::array<std::array<int, Room::Size>, Room::Size> body;
+		std::array<int, Room::Size> tempArray;
+		tempArray.fill(0);
+		body.fill(tempArray);
+
+		for (std::string variable : contents)
+		{
+			std::string code = variable.substr(0, variable.find('='));
+			std::string value = variable.substr(variable.find('=') + 1);
+
+			code.erase(std::remove(code.begin(), code.end(), '\n'), code.end());
+
+			if (code == "name")
+			{
+				name = value;
+			}
+			if (code == "body")
+			{
+				value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
+				int counter = 0;
+				for (int i = 0; i < Room::Size; i++)
+				{
+					for (int j = 0; j < Room::Size; j++)
+					{
+						int cutPosition = value.find(',');
+						body[i][j] = stoi(value.substr(counter, cutPosition));
+						counter += cutPosition + 1;
+					}
+				}
+			}
+		}
+
+		roomPresets.push_back(Room(body, name));
+
 		std::cout << entry.path() << std::endl;
 	}
 }

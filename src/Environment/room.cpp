@@ -22,6 +22,17 @@ Room::Room(std::array<std::array<int, Size>, Size> tileArray, std::string roomTy
 	: tileArray(tileArray), roomType(roomType), position(position)
 {
 	// TODO: Make system for creating unique id from float position of room
+	id = 0;
+}
+
+Room::Room(Room roomPreset, sf::Vector2f position)
+	: position(position)
+{
+	tileArray = roomPreset.getTileArray();
+	roomType = roomPreset.getRoomType();
+
+	// NOTE: Still needs nice id system plz thx
+	id = 0;
 }
 
 void Room::update(float dt)

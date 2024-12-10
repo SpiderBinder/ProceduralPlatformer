@@ -27,6 +27,7 @@ private:
 public:
 	int ID() { return id; }
 	sf::Vector2f getPosition() { return position; }
+	std::string getRoomType() { return roomType; }
 	std::array<std::array<int, Size>, Size> getTileArray() { return tileArray; }
 
 	Room();
@@ -35,6 +36,7 @@ public:
 	Room(std::array<std::array<int, Size>, Size> tileArray, 
 		std::string roomType, 
 		sf::Vector2f position);
+	Room(Room roomPreset, sf::Vector2f position);
 	void update(float dt);
 	void render(sf::RenderWindow& window, std::vector<sf::Texture> textures);
 	
