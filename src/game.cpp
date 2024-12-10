@@ -74,7 +74,13 @@ void Game::update(float dt)
 
 		levels[currentLevel].update(dt);
 
-		collisionDetect();
+		sf::FloatRect playerCollider = sf::FloatRect(player.getPosition(), player.getSize());
+		sf::FloatRect tileCollider = collisionDetect(playerCollider);
+		while (tileCollider != sf::FloatRect())
+		{
+			collisionManagement(sf::FloatRect(player.getPosition(), player.getSize()), tileCollider, player.getVelocity());
+			tileCollider = collisionDetect(sf::FloatRect(player.getPosition(), player.getSize()));
+		}
 
 
 		playerView.setCenter((player.getBasePosition() + (player.getBaseSize() / 2.f)));
@@ -113,22 +119,22 @@ void Game::update(float dt)
 // TODO: In the future, checking for travelling clean-through a collider would be nice
 // TODO: Add check for attempting to uncrouch to see if it would cause a collision when wouldn't otherwise and lock uncrouching
 // NOTE: For this (^) you could uncouple collisionManagement from collisionDetect and have collisionDetect return the tile's collider (default rect if no collision) instead?
-void Game::collisionDetect()
+sf::FloatRect Game::collisionDetect(sf::FloatRect object)
 {
-	std::vector<Room> rooms = levels[currentLevel].collisionDetect(player.getPosition(), player.getSize());
+	std::vector<Room> rooms = levels[currentLevel].collisionDetect(object.getPosition(), object.getSize());
 
 	for (Room room : rooms)
 	{
 		std::vector<sf::FloatRect> tileColliders;
 
-		int startX = (int(player.getPosition().x) - int(room.getPosition().x)) / Room::TileSize;
-		int startY = (int(player.getPosition().y) - int(room.getPosition().y)) / Room::TileSize;
+		int startX = (int(object.getPosition().x) - int(room.getPosition().x)) / Room::TileSize;
+		int startY = (int(object.getPosition().y) - int(room.getPosition().y)) / Room::TileSize;
 		startX = startX > 0 ? startX : 0;
 		startY = startY > 0 ? startY : 0;
 
-		for (int i = startX; (i < startX + int(player.getSize().x / Room::TileSize) + 1) && (i < Room::Size); i++)
+		for (int i = startX; (i < startX + int(object.getSize().x / Room::TileSize) + 2) && (i < Room::Size); i++)
 		{
-			for (int j = startY; (j < startY + int(player.getSize().y / Room::TileSize) + 1) && (j < Room::Size); j++)
+			for (int j = startY; (j < startY + int(object.getSize().y / Room::TileSize) + 2) && (j < Room::Size); j++)
 			{
 
 				if (room.getTileArray()[i][j] != 0)
@@ -137,7 +143,7 @@ void Game::collisionDetect()
 						room.getPosition() + (sf::Vector2f(i, j) * float(Room::TileSize)),
 						sf::Vector2f(Room::TileSize, Room::TileSize));
 
-					if (sf::FloatRect(player.getPosition(), player.getSize()).intersects(tileCollider))
+					if (sf::FloatRect(object.getPosition(), object.getSize()).intersects(tileCollider))
 					{
 						tileColliders.push_back(tileCollider);
 					}
@@ -147,11 +153,11 @@ void Game::collisionDetect()
 
 		float distance = 100000;
 		int identifier = -1;
-		sf::Vector2f playerCentre = player.getPosition() + (player.getSize() / 2.f);
+		sf::Vector2f objectCentre = object.getPosition() + (object.getSize() / 2.f);
 		for (int i = 0; i < tileColliders.size(); i++)
 		{
 			sf::Vector2f tileCentre = tileColliders.at(i).getPosition() + (tileColliders.at(i).getSize() / 2.f);
-			sf::Vector2f direction = playerCentre - tileCentre;
+			sf::Vector2f direction = objectCentre - tileCentre;
 			float magnitude = sqrt(pow(direction.x, 2.f) + pow(direction.y, 2.f));
 			if (magnitude < distance)
 			{
@@ -161,15 +167,10 @@ void Game::collisionDetect()
 		}
 		if (identifier == -1)
 		{
-			return;
+			return sf::FloatRect();
 		}
 
-		collisionManagement(
-			sf::FloatRect(player.getPosition(), player.getSize()),
-			tileColliders.at(identifier),
-			player.getVelocity());
-
-		return;
+		return tileColliders.at(identifier);
 	}
 }
 
@@ -250,8 +251,9 @@ void Game::collisionManagement(sf::FloatRect object1, sf::FloatRect object2, sf:
 		break;
 	}
 
+	// NOTE: May be temporary so this can be used for more than just player collision correction
+	// TODO: Make entity class that both player and enemies inherit from it and use the collision class
 	player.collision(newPosition, newVelocity, player.getGrounded() ? true : side == 0);
-	collisionDetect();
 
 	return;
 }

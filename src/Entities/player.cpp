@@ -103,11 +103,21 @@ void Player::update(float dt)
 
 	// Updating collision box
 	if (crouch)
+	{
+		size.x = baseSize.x;
 		size.y = baseSize.y * 0.75;
+	}
 	else if (slide)
+	{
+		size.x = baseSize.x * 2;
 		size.y = baseSize.y * 0.5;
+	}
 	else
-		size.y = baseSize.y;
+	{
+		size = baseSize;
+	}
+
+	
 
 	// NOTE: Having a seperate thing for acceleration may be stupid idk
 	acceleration.x = 0;
@@ -161,7 +171,7 @@ void Player::update(float dt)
 		float airResistance = velocity.x + (velocity.x >= 0 ? 30 : -30);
 		velocity.x -= dt * totalFriction * airResistance;
 	}
-	else
+	else if (moveLeft == false && moveRight == false)
 	{
 		velocity.x = 0;
 	}

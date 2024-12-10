@@ -52,7 +52,7 @@ public:
 	void keyboardEvent(sf::Event event);
 	void mouseEvent(sf::Event event);
 	// Physics Engine
-	void collisionDetect();
+	sf::FloatRect collisionDetect(sf::FloatRect object);
 	void collisionManagement(sf::FloatRect object1, sf::FloatRect object2, sf::Vector2f direction);
 
 	// Public get-only varaibles
