@@ -9,7 +9,7 @@ Player::Player()
 	// Physics
 	runAcceleration = 3000.f;
 	runSpeed = 300.f;
-	jumpSpeed = 200.f;
+	jumpSpeed = 220.f;
 	gravity = 1500.f;
 	friction = 1.f; // NOTE: Temporary value until individual material friction is added
 	grounded = false;
@@ -22,6 +22,7 @@ Player::Player()
 	slide = false;
 
 	inputQueued = false;
+	inputQueue = sf::Event(); // Default value so the IDE error checking shushes
 
 	animation = Idle;
 }

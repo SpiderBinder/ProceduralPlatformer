@@ -78,7 +78,7 @@ void Level::loadRooms()
 					for (int j = 0; j < Room::Size; j++)
 					{
 						int cutPosition = value.find(',');
-						body[i][j] = stoi(value.substr(counter, cutPosition));
+						body[j][i] = stoi(value.substr(counter, cutPosition));
 						counter += cutPosition + 1;
 					}
 				}
